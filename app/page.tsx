@@ -10,6 +10,7 @@ export default function Page() {
     message: "",
     company: "",
   });
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -57,6 +58,7 @@ export default function Page() {
     setStatus("loading");
     setErrorMessage("");
 
+    // Honeypot spam protection
     if (formData.company) {
       setStatus("success");
       return;
@@ -106,31 +108,35 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.24),transparent_28%),radial-gradient(circle_at_left,rgba(59,130,246,0.16),transparent_22%),linear-gradient(to_bottom,rgba(15,23,42,0.96),rgba(2,6,23,1))]" />
-        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:44px_44px]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12 lg:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.10),transparent_22%),linear-gradient(to_bottom,rgba(15,23,42,0.96),rgba(2,6,23,1))]" />
+        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:44px_44px]" />
+
+        <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 lg:px-12 lg:py-20">
           <div className="grid items-center gap-14 lg:grid-cols-2">
             <div>
-              <div className="mb-6 flex items-center gap-4">
+              <div className="mb-4 flex items-center gap-3">
                 <img
                   src="/jetizon-logo.png"
                   alt="Jetizon logo"
-                  className="h-14 w-14 rounded-2xl object-contain shadow-2xl"
+                  className="h-12 w-12 rounded-xl object-contain"
                 />
-                <div className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1 text-sm text-cyan-200">
+                <span className="text-sm font-medium text-cyan-300">
                   Jetizon Motorbike Intech LLC
-                </div>
+                </span>
               </div>
 
               <h1 className="max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl">
                 Powering the next wave of electric mobility.
               </h1>
+
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
-                Jetizon is a forward-looking electric mobility brand focused on motorbikes,
-                smart charging access, and the long-term vision of a connected clean-energy
-                transportation ecosystem.
+                Jetizon is a forward-looking electric mobility brand focused on
+                motorbikes, smart charging access, and the long-term vision of a
+                connected clean-energy transportation ecosystem.
               </p>
+
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
                   href="#contact"
@@ -145,33 +151,37 @@ export default function Page() {
                   View Roadmap
                 </a>
               </div>
+
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-cyan-300">NYC</div>
                   <p className="mt-1 text-sm text-slate-300">Urban rollout focus</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-cyan-300">EV + Micro</div>
                   <p className="mt-1 text-sm text-slate-300">Charging ecosystem vision</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-cyan-300">Smart Safety</div>
                   <p className="mt-1 text-sm text-slate-300">Battery intelligence roadmap</p>
                 </div>
               </div>
             </div>
 
-            <div className="relative">
-              <img
-                src="/jetizon-logo.png"
-                alt="Jetizon logo large"
-                className="w-56 md:w-64 mx-auto opacity-80 drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]"
-              />
+            <div className="relative flex justify-center">
+              <div className="rounded-[2rem] border border-cyan-400/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+                <img
+                  src="/jetizon-logo.png"
+                  alt="Jetizon logo large"
+                  className="w-56 md:w-64 mx-auto opacity-90 drop-shadow-[0_0_22px_rgba(34,211,238,0.45)]"
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* VISION */}
       <section id="vision" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="max-w-3xl">
           <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">The Vision</p>
@@ -180,8 +190,8 @@ export default function Page() {
           </h2>
           <p className="mt-6 text-lg leading-8 text-slate-300">
             We envision a unified electric mobility experience where clean vehicles,
-            accessible charging, and intelligent battery systems work together to support
-            a more efficient and sustainable future.
+            accessible charging, and intelligent battery systems work together to
+            support a more efficient and sustainable future.
           </p>
         </div>
 
@@ -199,6 +209,7 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ROADMAP */}
       <section id="roadmap" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
@@ -229,6 +240,7 @@ export default function Page() {
         </div>
       </section>
 
+      {/* FOUNDER + CONTACT INFO */}
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1.1fr,0.9fr]">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
@@ -255,9 +267,9 @@ export default function Page() {
             </p>
             <p className="mt-4 text-lg leading-8 text-slate-300">
               Through Jetizon, Andre is translating this research into practical
-              innovation—building an ecosystem that combines electric vehicles, charging
-              infrastructure, and smart battery intelligence into a unified platform for
-              the future of mobility.
+              innovation—building an ecosystem that combines electric vehicles,
+              charging infrastructure, and smart battery intelligence into a unified
+              platform for the future of mobility.
             </p>
           </div>
 
@@ -275,6 +287,7 @@ export default function Page() {
               <p><strong>Location:</strong> Ridgewood, New York</p>
               <p><strong>Company:</strong> Jetizon Motorbike Intech LLC</p>
             </div>
+
             <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-cyan-400/5 p-5">
               <p className="text-sm uppercase tracking-[0.25em] text-cyan-300">Partnerships</p>
               <p className="mt-3 text-sm leading-7 text-slate-300">
@@ -286,6 +299,7 @@ export default function Page() {
         </div>
       </section>
 
+      {/* CONTACT FORM */}
       <section id="contact" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.9fr,1.1fr]">
           <div>
@@ -412,6 +426,7 @@ export default function Page() {
         </div>
       </section>
 
+      {/* FOOTER CTA */}
       <section className="mx-auto max-w-7xl px-6 pb-20 md:px-10 lg:px-12">
         <div className="rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-slate-900 to-slate-950 p-8 shadow-2xl md:p-12">
           <div className="max-w-3xl">
