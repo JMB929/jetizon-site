@@ -88,6 +88,10 @@ export default function Page() {
           message: "",
           company: "",
         });
+
+        setTimeout(() => {
+          window.location.href = "/thank-you";
+        }, 1200);
       } else {
         const data = await response.json().catch(() => null);
         setStatus("error");
