@@ -355,7 +355,7 @@ export default function PreAssessmentForm({
           </div>
         )}
 
-        {state.errors && state.errors.length > 0 && !state.succeeded && (
+        {state.errors && !state.succeeded && (
           <div className="rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">
             <ValidationError errors={state.errors} className="text-red-200" />
           </div>
