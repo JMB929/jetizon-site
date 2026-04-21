@@ -1,19 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 
 export default function Page() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    interest: "General Inquiry",
-    message: "",
-    company: "",
-  });
-
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
-
   const pillars = [
     {
       title: "Electric Micromobility",
@@ -46,65 +35,6 @@ export default function Page() {
       text: "Announce partnerships, expand the charging footprint, and connect Jetizon to a broader clean-energy mobility network.",
     },
   ];
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus("loading");
-    setErrorMessage("");
-
-    // Honeypot spam protection
-    if (formData.company) {
-      setStatus("success");
-      return;
-    }
-
-    try {
-      const response = await fetch("https://formspree.io/f/meevjrzz", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          interest: formData.interest,
-          message: formData.message,
-          _subject: "New Jetizon website inquiry",
-        }),
-      });
-
-      if (response.ok) {
-        setStatus("success");
-        setFormData({
-          name: "",
-          email: "",
-          interest: "General Inquiry",
-          message: "",
-          company: "",
-        });
-
-        setTimeout(() => {
-          window.location.href = "/thank-you";
-        }, 1200);
-      } else {
-        const data = await response.json().catch(() => null);
-        setStatus("error");
-        setErrorMessage(
-          data?.errors?.[0]?.message || "Something went wrong. Please try again."
-        );
-      }
-    } catch {
-      setStatus("error");
-      setErrorMessage("Network error. Please check your connection and try again.");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -303,14 +233,27 @@ export default function Page() {
       <section id="contact" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.9fr,1.1fr]">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Contact Jetizon</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+              Free Preliminary Site Review
+            </p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-              Let’s talk about vehicles, charging, and partnerships.
+              Start with a focused intake before a full charging review.
             </h2>
             <p className="mt-6 text-lg leading-8 text-slate-300">
-              Whether you are interested in future collaboration, host-site opportunities,
-              or learning more about Jetizon’s mobility vision, use the form or email us directly.
+              If you are exploring Level 2 or micromobility charging for your property,
+              Jetizon can review your initial site information and determine whether
+              the location looks worth evaluating further.
             </p>
+            <div className="mt-8 rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Best For
+              </p>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                <li>Property owners and managers screening host-site potential</li>
+                <li>Businesses exploring customer, tenant, or micromobility charging</li>
+                <li>Sites with parking, curb access, or utility information ready to share</li>
+              </ul>
+            </div>
             <div className="mt-8 space-y-3 text-slate-300">
               <p><strong>Email:</strong> jmbintech@gmail.com</p>
               <p><strong>Phone:</strong> (646) 991-1287</p>
@@ -319,109 +262,34 @@ export default function Page() {
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                tabIndex={-1}
-                autoComplete="off"
-                className="hidden"
-                aria-hidden="true"
-              />
-
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-200">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
-                  placeholder="Your name"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-200">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="interest" className="mb-2 block text-sm font-medium text-slate-200">
-                  Interest
-                </label>
-                <select
-                  id="interest"
-                  name="interest"
-                  value={formData.interest}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
-                >
-                  <option>General Inquiry</option>
-                  <option>Charging Host Opportunity</option>
-                  <option>Partnership Discussion</option>
-                  <option>Investor / Business Inquiry</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="message" className="mb-2 block text-sm font-medium text-slate-200">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
-                  placeholder="Tell us a little about your interest..."
-                />
-              </div>
-
-              {status === "success" && (
-                <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
-                  Thank you. Your inquiry was sent successfully.
-                </div>
-              )}
-
-              {status === "error" && (
-                <div className="rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">
-                  {errorMessage}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="w-full rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {status === "loading" ? "Sending..." : "Send Inquiry"}
-              </button>
-
-              <p className="text-xs leading-6 text-slate-400">
-                Protected by a hidden anti-spam field. For stronger protection, enable
-                Formspree reCAPTCHA in your Formspree dashboard.
+            <p className="text-lg leading-8 text-slate-300">
+              Use the dedicated intake form to upload photos, parking details, site
+              information, and any supporting documents before a deeper review.
+            </p>
+            <div className="mt-8 rounded-2xl border border-white/10 bg-slate-900/70 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Included In The Intake
               </p>
-            </form>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                <li>Property and contact details</li>
+                <li>Charging type and site-control questions</li>
+                <li>Photo and document uploads for early screening</li>
+              </ul>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/pre-assessment"
+                className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+              >
+                Start Pre-Assessment
+              </Link>
+              <a
+                href="mailto:jmbintech@gmail.com"
+                className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Email Instead
+              </a>
+            </div>
           </div>
         </div>
       </section>
