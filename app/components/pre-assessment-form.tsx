@@ -24,13 +24,19 @@ export default function PreAssessmentForm({
     parkingSpaces: "",
     chargingGoal: "Level 2 Charging",
     message: "",
+    authorizationConfirmed: false,
     company: "",
   });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value =
+      e.target instanceof HTMLInputElement && e.target.type === "checkbox"
+        ? e.target.checked
+        : e.target.value;
+
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   useEffect(() => {
@@ -344,9 +350,27 @@ export default function PreAssessmentForm({
           />
           <p className="mt-2 text-xs leading-6 text-slate-400">
             Upload site photos, utility documents, sketches, or parking layout references
-            for a preliminary review. Actual attachment limits depend on your Formspree
-            configuration.
+            for a preliminary review. Your current Formspree setup supports up to 10
+            files per submission, with a 25 MB limit per file.
           </p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+          <label className="flex items-start gap-3 text-sm leading-7 text-slate-300">
+            <input
+              name="authorizationConfirmed"
+              type="checkbox"
+              checked={formData.authorizationConfirmed}
+              onChange={handleChange}
+              required
+              className="mt-1 h-4 w-4 rounded border-white/20 bg-slate-950 text-cyan-300 focus:ring-cyan-400/50"
+            />
+            <span>
+              I confirm that I am authorized to submit this site information, and I want
+              Jetizon to review the property for preliminary EV or micromobility
+              charging fit.
+            </span>
+          </label>
         </div>
 
         {state.succeeded && (
