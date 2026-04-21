@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import JetizonChatbot from "./components/jetizon-chatbot";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"; // 👈 ADD THIS
@@ -30,6 +31,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <JetizonChatbot />
         <Analytics /> {/* 👈 ADD THIS */}
       </body>
     </html>

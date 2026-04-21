@@ -1,5 +1,6 @@
 "use client";
 
+import FaqBlock from "./components/faq-block";
 import Link from "next/link";
 
 export default function Page() {
@@ -293,6 +294,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <FaqBlock />
 
       {/* FOOTER CTA */}
       <section className="mx-auto max-w-7xl px-6 pb-20 md:px-10 lg:px-12">
