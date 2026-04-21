@@ -11,6 +11,7 @@ export default function PreAssessmentForm({
   layout = "compact",
 }: PreAssessmentFormProps) {
   const [state, handleSubmit] = useForm("meevjrzz");
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,6 +38,11 @@ export default function PreAssessmentForm({
         : e.target.value;
 
     setFormData({ ...formData, [e.target.name]: value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileNames = Array.from(e.target.files ?? []).map((file) => file.name);
+    setSelectedFiles(fileNames);
   };
 
   useEffect(() => {
@@ -346,6 +352,7 @@ export default function PreAssessmentForm({
             type="file"
             multiple
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.heic,.webp"
+            onChange={handleFileChange}
             className="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-900 px-4 py-4 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
           />
           <p className="mt-2 text-xs leading-6 text-slate-400">
@@ -353,6 +360,21 @@ export default function PreAssessmentForm({
             for a preliminary review. Your current Formspree setup supports up to 10
             files per submission, with a 25 MB limit per file.
           </p>
+          <p className="mt-2 text-xs leading-6 text-slate-400">
+            You can select multiple files in one step. On desktop, hold <span className="font-semibold text-slate-200">Command</span> or <span className="font-semibold text-slate-200">Shift</span> while selecting. On some phones, multi-select has to be chosen inside the photo picker before tapping done.
+          </p>
+          {selectedFiles.length > 0 && (
+            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Selected Files
+              </p>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+                {selectedFiles.map((fileName) => (
+                  <li key={fileName}>{fileName}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
