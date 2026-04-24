@@ -19,6 +19,11 @@ const faqs = [
     answer:
       "Yes. Jetizon can help screen whether a site looks viable, organize intake materials, and identify likely incentive and rebate paths. Final eligibility depends on program rules, utility review, and project details.",
   },
+  {
+    question: "How many files can I upload, and what types work best?",
+    answer:
+      "The pre-assessment form currently supports up to 10 files per submission with a 25 MB limit per file through Formspree. Photos and PDFs work best. If you are on a phone, you may need to use multi-select inside the photo picker before tapping done.",
+  },
 ];
 
 export default function FaqBlock() {

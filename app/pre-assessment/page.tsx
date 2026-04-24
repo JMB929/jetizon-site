@@ -66,11 +66,18 @@ export default function PreAssessmentPage() {
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
                 What Happens Next
               </p>
-              <p className="mt-4 text-sm leading-7 text-slate-300">
-                Jetizon reviews the materials, screens the site for basic fit, and then
-                follows up if the location appears technically and commercially worth
-                evaluating further.
-              </p>
+              <ol className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                <li>Jetizon reviews the site details, photos, and supporting files.</li>
+                <li>
+                  The property is screened for basic fit, likely charging path, and
+                  obvious electrical or layout constraints.
+                </li>
+                <li>
+                  If the site looks promising, Jetizon follows up about the next technical
+                  step, which may include contractor review, utility document gathering, or
+                  incentive screening.
+                </li>
+              </ol>
             </div>
           </div>
 
