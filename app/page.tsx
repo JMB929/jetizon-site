@@ -171,6 +171,69 @@ export default function Page() {
         </div>
       </section>
 
+      {/* PRE-ASSESSMENT OVERVIEW */}
+      <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
+        <div className="grid gap-10 lg:grid-cols-[0.95fr,1.05fr]">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+              Preliminary Site Review
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
+              A structured way to see if a charging project is worth advancing.
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-slate-300">
+              Jetizon helps host sites understand whether a property appears to be
+              a realistic fit for EV or micromobility charging before time and money
+              are spent on the wrong design path.
+            </p>
+            <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                What We Review
+              </p>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                <li>Property type, parking layout, and charging goal</li>
+                <li>Site photos and basic electrical visibility</li>
+                <li>Whether the project looks straightforward or more complex</li>
+                <li>Whether contractor, utility, or added approval coordination may be needed</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                How It Works
+              </p>
+              <ol className="mt-4 space-y-4 text-sm leading-7 text-slate-300">
+                <li>
+                  <strong className="text-white">1. Submit site details and photos.</strong>{" "}
+                  Share the address, charging goal, and the basics of the property.
+                </li>
+                <li>
+                  <strong className="text-white">2. Jetizon performs a preliminary review.</strong>{" "}
+                  We screen for fit, likely electrical practicality, and early complexity triggers.
+                </li>
+                <li>
+                  <strong className="text-white">3. Receive a recommended next step.</strong>{" "}
+                  That may be contractor review, technical follow-up, more documentation, or pause.
+                </li>
+              </ol>
+            </div>
+
+            <div className="rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Best Fit Examples
+              </p>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                <li>Multifamily properties and mixed-use buildings with parking</li>
+                <li>Hotels, garages, lots, and neighborhood host sites</li>
+                <li>Businesses exploring guest, tenant, or micromobility charging</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FOUNDER + CONTACT INFO */}
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1.1fr,0.9fr]">
