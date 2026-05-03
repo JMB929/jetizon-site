@@ -12,12 +12,13 @@ export default function PreAssessmentPage() {
               Jetizon Pre-Assessment
             </p>
             <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
-              Send site details, photos, and documents before a full charging review.
+              Send site details, photos, and documents before a deeper charging review.
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300 md:text-xl">
-              This intake is for property owners, managers, and host businesses exploring
-              Level 2 or micromobility charging. Share the basics now and Jetizon can
-              screen whether the site looks worth taking to the next step.
+              This intake is for property owners, managers, and host businesses
+              exploring Level 2 or micromobility charging. Share the basics now
+              and Jetizon can screen whether the site looks worth taking toward a
+              contractor, partner, utility, or co-host discussion.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link

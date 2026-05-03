@@ -7,33 +7,33 @@ export default function Page() {
   const pillars = [
     {
       title: "Electric Micromobility",
-      text: "Jetizon is building a cleaner urban future through electric motorbikes, e-bikes, and smart mobility solutions designed for real-world use.",
+      text: "Jetizon is focused on practical electric mobility opportunities that connect host sites, charging access, and real-world urban use cases.",
     },
     {
-      title: "Charging Infrastructure",
-      text: "Our vision extends beyond vehicles. We are developing a connected charging ecosystem that can support both micromobility and broader EV adoption.",
+      title: "Host-Site Development",
+      text: "Jetizon helps property owners, businesses, and host sites evaluate and advance Level 2 and micromobility charging opportunities.",
     },
     {
       title: "Smart Battery Intelligence",
-      text: "Jetizon aims to integrate advanced battery monitoring, safety awareness, and data-driven energy insights to improve reliability and performance.",
+      text: "Over time, Jetizon's charging vision is intended to expand into smarter battery-awareness, safety insight, and data-informed charging operations.",
     },
   ];
 
   const roadmap = [
     {
       phase: "Phase 1",
-      title: "Brand Foundation",
-      text: "Establish the Jetizon identity, clarify the mission, and introduce the vision for an electrified mobility ecosystem.",
+      title: "Host-Site Origination",
+      text: "Build the Jetizon intake and screening pipeline, qualify host opportunities, and create a practical path for early charging projects.",
     },
     {
       phase: "Phase 2",
-      title: "Pilot Rollout",
-      text: "Launch initial vehicles and the first charging location to demonstrate real-world usability and community value.",
+      title: "Co-Host and Partner Projects",
+      text: "Advance selected sites with installation partners, co-host structures, and staged charging deployments that prove real-world traction.",
     },
     {
       phase: "Phase 3",
-      title: "Strategic Collaborations",
-      text: "Announce partnerships, expand the charging footprint, and connect Jetizon to a broader clean-energy mobility network.",
+      title: "Broader Charging Ecosystem",
+      text: "Expand from facilitation and partner-led projects toward a broader Jetizon charging ecosystem that can support smarter long-term infrastructure growth.",
     },
   ];
 
@@ -59,13 +59,14 @@ export default function Page() {
               </div>
 
               <h1 className="max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl">
-                Powering the next wave of electric mobility.
+                Helping host sites move from charging interest to real project pathways.
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
-                Jetizon is a forward-looking electric mobility brand focused on
-                motorbikes, smart charging access, and the long-term vision of a
-                connected clean-energy transportation ecosystem.
+                Jetizon is building a charging-site facilitation and host-site
+                development business focused on Level 2 and micromobility
+                opportunities, with a long-term vision for a broader connected
+                charging ecosystem.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -116,14 +117,16 @@ export default function Page() {
       <section id="vision" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="max-w-3xl">
           <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">The Vision</p>
-          <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-            Jetizon is more than a motorbike concept.
-          </h2>
-          <p className="mt-6 text-lg leading-8 text-slate-300">
-            We envision a unified electric mobility experience where clean vehicles,
-            accessible charging, and intelligent battery systems work together to
-            support a more efficient and sustainable future.
-          </p>
+            <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
+              Jetizon starts with facilitation, not overstatement.
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-slate-300">
+              Jetizon&apos;s near-term role is to help identify, screen, and advance
+              real charging-site opportunities. Over time, that work is intended
+              to grow into a broader charging ecosystem supported by better site
+              intelligence, stronger host partnerships, and smarter battery-aware
+              infrastructure.
+            </p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -175,17 +178,18 @@ export default function Page() {
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.95fr,1.05fr]">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
-              Preliminary Site Review
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-              A structured way to see if a charging project is worth advancing.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-slate-300">
-              Jetizon helps host sites understand whether a property appears to be
-              a realistic fit for EV or micromobility charging before time and money
-              are spent on the wrong design path.
-            </p>
+          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+            Preliminary Site Review
+          </p>
+          <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
+            A structured first step for host sites exploring charging.
+          </h2>
+          <p className="mt-6 text-lg leading-8 text-slate-300">
+            Jetizon helps property owners, businesses, and host sites understand
+            whether a site appears to be a realistic fit for Level 2 or
+            micromobility charging before time and money are spent on the wrong
+            design path.
+          </p>
             <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
                 What We Review
@@ -194,7 +198,7 @@ export default function Page() {
                 <li>Property type, parking layout, and charging goal</li>
                 <li>Site photos and basic electrical visibility</li>
                 <li>Whether the project looks straightforward or more complex</li>
-                <li>Whether contractor, utility, or added approval coordination may be needed</li>
+                <li>Whether contractor, utility, partner, or added approval coordination may be needed</li>
               </ul>
             </div>
           </div>
@@ -227,7 +231,7 @@ export default function Page() {
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
                 <li>Multifamily properties and mixed-use buildings with parking</li>
                 <li>Hotels, garages, lots, and neighborhood host sites</li>
-                <li>Businesses exploring guest, tenant, or micromobility charging</li>
+                <li>Businesses exploring guest, tenant, customer, or micromobility charging</li>
               </ul>
             </div>
           </div>
@@ -286,7 +290,8 @@ export default function Page() {
               <p className="text-sm uppercase tracking-[0.25em] text-cyan-300">Partnerships</p>
               <p className="mt-3 text-sm leading-7 text-slate-300">
                 Jetizon is actively exploring opportunities with infrastructure providers,
-                property owners, and host businesses interested in the future of urban charging.
+                site hosts, and strategic partners interested in advancing practical
+                urban charging projects.
               </p>
             </div>
           </div>
@@ -301,12 +306,13 @@ export default function Page() {
               Free Preliminary Site Review
             </p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-              Start with a focused intake before a full charging review.
+              Start with a focused intake before deeper charging planning.
             </h2>
             <p className="mt-6 text-lg leading-8 text-slate-300">
-              If you are exploring Level 2 or micromobility charging for your property,
-              Jetizon can review your initial site information and determine whether
-              the location looks worth evaluating further.
+              If you are exploring Level 2 or micromobility charging for your
+              property, Jetizon can review your initial site information and help
+              determine whether the location looks worth advancing toward a contractor,
+              partner, utility, or co-host discussion.
             </p>
             <div className="mt-8 rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
@@ -328,7 +334,7 @@ export default function Page() {
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
             <p className="text-lg leading-8 text-slate-300">
               Use the dedicated intake form to upload photos, parking details, site
-              information, and any supporting documents before a deeper review.
+              information, and supporting documents before a deeper site review.
             </p>
             <div className="mt-8 rounded-2xl border border-white/10 bg-slate-900/70 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
@@ -369,9 +375,10 @@ export default function Page() {
               Vehicles. Charging. Smart expansion.
             </h2>
             <p className="mt-6 text-lg leading-8 text-slate-300">
-              Jetizon is currently building its foundation for launch. As milestones are
-              met, future announcements will highlight vehicle deployment, charging
-              activation, and collaborative growth opportunities.
+              Jetizon is building from host-site screening and partner development
+              toward broader charging growth. As milestones are met, future
+              announcements will highlight project advancement, charging activation,
+              and collaborative expansion opportunities.
             </p>
           </div>
         </div>
