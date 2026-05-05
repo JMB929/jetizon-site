@@ -164,6 +164,14 @@ export default function OnsiteAssistant() {
     "Sidewalk, curb, or access conditions",
   ];
 
+  const usageSteps = [
+    "Walk the site first and take photos before filling anything in.",
+    "Choose the closest host type, project type, and location type.",
+    "Be honest about host commitment, product readiness, and complexity.",
+    "Use notes for what you actually observed onsite, not assumptions.",
+    "Read the Green / Yellow / Red result before bringing in a vendor or contractor.",
+  ];
+
   return (
     <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
       <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
@@ -318,6 +326,20 @@ export default function OnsiteAssistant() {
       </div>
 
       <div className="space-y-6">
+        <div className="rounded-[2rem] border border-lime-400/20 bg-lime-400/5 p-6 shadow-2xl backdrop-blur">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+            How to use this tool
+          </p>
+          <ol className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+            {usageSteps.map((step, index) => (
+              <li key={step}>
+                <span className="font-semibold text-white">{index + 1}.</span>{" "}
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
           <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             Recommendation
