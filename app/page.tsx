@@ -334,26 +334,47 @@ export default function Page() {
             />
             <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Founder</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">Andre Neptune Jr</h2>
+            <p className="mt-3 text-base font-medium uppercase tracking-[0.24em] text-slate-400">
+              Founder, Charging-Site Development and Battery Intelligence
+            </p>
             <p className="mt-6 text-lg leading-8 text-slate-300">
-              Andre Neptune Jr is a Doctor of Information Technology candidate at City
-              University of Seattle, specializing in the intersection of artificial
-              intelligence, battery safety, and edge computing systems. His research
-              focuses on developing physics-informed machine learning frameworks for
-              early-stage safety prediction in lithium-ion batteries, particularly under
-              reduced atmospheric pressure conditions.
+              Andre Neptune Jr is building Jetizon around practical charging-site
+              development, host-site facilitation, and the longer-term role of smarter
+              battery-aware infrastructure in electric mobility.
             </p>
             <p className="mt-4 text-lg leading-8 text-slate-300">
-              With a strong emphasis on real-world deployment, his work explores how
-              intelligent battery monitoring and predictive analytics can be embedded
-              directly into edge devices to enhance safety, reliability, and response
-              time in electric mobility systems.
+              His work sits at the intersection of electric mobility deployment,
+              charging access, and battery safety. Jetizon’s goal is to help move
+              credible opportunities from early interest into real project pathways
+              while building a foundation for more intelligent charging systems over
+              time.
             </p>
-            <p className="mt-4 text-lg leading-8 text-slate-300">
-              Through Jetizon, Andre is translating this research into practical
-              innovation—building an ecosystem that combines electric vehicles,
-              charging infrastructure, and smart battery intelligence into a unified
-              platform for the future of mobility.
-            </p>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
+                  Focus
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Host-site charging opportunities in New York
+                </p>
+              </div>
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
+                  Position
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Facilitator first, co-host and operator later
+                </p>
+              </div>
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
+                  Direction
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Battery-aware, safety-conscious charging growth
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-slate-900 p-8 shadow-2xl">
