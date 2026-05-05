@@ -41,19 +41,19 @@ export default function Page() {
     <div className="min-h-screen bg-slate-950 text-white">
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.10),transparent_22%),linear-gradient(to_bottom,rgba(15,23,42,0.96),rgba(2,6,23,1))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(132,225,0,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(95,183,0,0.12),transparent_22%),linear-gradient(to_bottom,rgba(7,9,7,0.97),rgba(2,2,2,1))]" />
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:44px_44px]" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 lg:px-12 lg:py-20">
           <div className="grid items-center gap-14 lg:grid-cols-2">
             <div>
-              <div className="mb-4 flex items-center gap-3">
+              <div className="mb-6">
                 <img
-                  src="/jetizon-logo.png"
-                  alt="Jetizon logo"
-                  className="h-12 w-12 rounded-xl object-contain"
+                  src="/jetizon-brand-banner.webp"
+                  alt="Jetizon EV and Energy Innovation"
+                  className="h-auto w-[20rem] max-w-full object-contain"
                 />
-                <span className="text-sm font-medium text-cyan-300">
+                <span className="mt-4 block text-sm font-medium uppercase tracking-[0.28em] text-lime-400">
                   Jetizon Motorbike Intech LLC
                 </span>
               </div>
@@ -72,7 +72,7 @@ export default function Page() {
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
                   href="#contact"
-                  className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+                  className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
                 >
                   Contact Jetizon
                 </a>
@@ -86,26 +86,26 @@ export default function Page() {
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                  <div className="text-2xl font-semibold text-cyan-300">NYC</div>
+                  <div className="text-2xl font-semibold text-lime-400">NYC</div>
                   <p className="mt-1 text-sm text-slate-300">Urban rollout focus</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                  <div className="text-2xl font-semibold text-cyan-300">EV + Micro</div>
+                  <div className="text-2xl font-semibold text-lime-400">EV + Micro</div>
                   <p className="mt-1 text-sm text-slate-300">Charging ecosystem vision</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                  <div className="text-2xl font-semibold text-cyan-300">Smart Safety</div>
+                  <div className="text-2xl font-semibold text-lime-400">Smart Safety</div>
                   <p className="mt-1 text-sm text-slate-300">Battery intelligence roadmap</p>
                 </div>
               </div>
             </div>
 
             <div className="relative flex justify-center">
-              <div className="rounded-[2rem] border border-cyan-400/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+              <div className="rounded-[2rem] border border-lime-400/15 bg-white/5 p-6 shadow-2xl backdrop-blur">
                 <img
-                  src="/jetizon-logo.png"
+                  src="/jetizon-brand-banner.webp"
                   alt="Jetizon logo large"
-                  className="w-56 md:w-64 mx-auto opacity-90 drop-shadow-[0_0_22px_rgba(34,211,238,0.45)]"
+                  className="mx-auto w-[34rem] max-w-full opacity-95 drop-shadow-[0_0_24px_rgba(132,225,0,0.35)]"
                 />
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function Page() {
       {/* VISION */}
       <section id="vision" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">The Vision</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">The Vision</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
               Jetizon starts with facilitation, not overstatement.
             </h2>
@@ -135,7 +135,7 @@ export default function Page() {
               key={pillar.title}
               className="rounded-[1.75rem] border border-white/10 bg-white/5 p-7 shadow-xl backdrop-blur"
             >
-              <div className="mb-4 h-12 w-12 rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-400/30" />
+              <div className="mb-4 h-12 w-12 rounded-2xl bg-lime-400/10 ring-1 ring-lime-400/30" />
               <h3 className="text-xl font-semibold">{pillar.title}</h3>
               <p className="mt-3 text-sm leading-7 text-slate-300">{pillar.text}</p>
             </div>
@@ -147,7 +147,7 @@ export default function Page() {
       <section id="roadmap" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Roadmap</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Roadmap</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
               How the vision comes to life.
             </h2>
@@ -164,7 +164,7 @@ export default function Page() {
               key={item.phase}
               className="rounded-[1.75rem] border border-white/10 bg-white/5 p-7"
             >
-              <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+              <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
                 {item.phase}
               </div>
               <h3 className="mt-3 text-2xl font-semibold">{item.title}</h3>
@@ -178,7 +178,7 @@ export default function Page() {
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.95fr,1.05fr]">
           <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             Preliminary Site Review
           </p>
           <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
@@ -191,7 +191,7 @@ export default function Page() {
             design path.
           </p>
             <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 What We Review
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -205,7 +205,7 @@ export default function Page() {
 
           <div className="space-y-6">
             <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 How It Works
               </p>
               <ol className="mt-4 space-y-4 text-sm leading-7 text-slate-300">
@@ -224,8 +224,8 @@ export default function Page() {
               </ol>
             </div>
 
-            <div className="rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+            <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 Best Fit Examples
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -247,7 +247,7 @@ export default function Page() {
               alt="Andre Neptune Jr"
               className="mb-6 h-40 w-40 rounded-full border border-white/10 object-cover shadow-2xl"
             />
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Founder</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Founder</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">Andre Neptune Jr</h2>
             <p className="mt-6 text-lg leading-8 text-slate-300">
               Andre Neptune Jr is a Doctor of Information Technology candidate at City
@@ -278,7 +278,7 @@ export default function Page() {
               <p><strong>Phone:</strong> (646) 991-1287</p>
               <p>
                 <strong>Email:</strong>{" "}
-                <a href="mailto:jmbintech@gmail.com" className="text-cyan-300 underline">
+                <a href="mailto:jmbintech@gmail.com" className="text-lime-400 underline">
                   jmbintech@gmail.com
                 </a>
               </p>
@@ -286,8 +286,8 @@ export default function Page() {
               <p><strong>Company:</strong> Jetizon Motorbike Intech LLC</p>
             </div>
 
-            <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-cyan-400/5 p-5">
-              <p className="text-sm uppercase tracking-[0.25em] text-cyan-300">Partnerships</p>
+            <div className="mt-8 rounded-2xl border border-lime-400/20 bg-lime-400/5 p-5">
+              <p className="text-sm uppercase tracking-[0.25em] text-lime-400">Partnerships</p>
               <p className="mt-3 text-sm leading-7 text-slate-300">
                 Jetizon is actively exploring opportunities with infrastructure providers,
                 site hosts, and strategic partners interested in advancing practical
@@ -302,7 +302,7 @@ export default function Page() {
       <section id="contact" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.9fr,1.1fr]">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
               Free Preliminary Site Review
             </p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
@@ -314,8 +314,8 @@ export default function Page() {
               determine whether the location looks worth advancing toward a contractor,
               partner, utility, or co-host discussion.
             </p>
-            <div className="mt-8 rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+            <div className="mt-8 rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 Best For
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -337,7 +337,7 @@ export default function Page() {
               information, and supporting documents before a deeper site review.
             </p>
             <div className="mt-8 rounded-2xl border border-white/10 bg-slate-900/70 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 Included In The Intake
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -349,7 +349,7 @@ export default function Page() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/pre-assessment"
-                className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+                className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
               >
                 Start Pre-Assessment
               </Link>
@@ -368,9 +368,9 @@ export default function Page() {
 
       {/* FOOTER CTA */}
       <section className="mx-auto max-w-7xl px-6 pb-20 md:px-10 lg:px-12">
-        <div className="rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-slate-900 to-slate-950 p-8 shadow-2xl md:p-12">
+        <div className="rounded-[2rem] border border-lime-400/20 bg-gradient-to-br from-lime-500/10 via-slate-900 to-slate-950 p-8 shadow-2xl md:p-12">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Coming Soon</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Coming Soon</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
               Vehicles. Charging. Smart expansion.
             </h2>

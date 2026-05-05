@@ -84,7 +84,7 @@ export default function JetizonChatbot() {
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen && (
-        <div className="mb-4 w-[min(24rem,calc(100vw-2rem))] rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/95 p-4 shadow-2xl backdrop-blur">
+        <div className="mb-4 w-[min(24rem,calc(100vw-2rem))] rounded-[1.5rem] border border-lime-400/20 bg-slate-950/95 p-4 shadow-2xl backdrop-blur">
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-white">Ask Jetizon</p>
@@ -108,7 +108,7 @@ export default function JetizonChatbot() {
                 className={
                   message.role === "assistant"
                     ? "rounded-2xl bg-white/5 px-4 py-3 text-sm leading-6 text-slate-200"
-                    : "ml-8 rounded-2xl bg-cyan-300 px-4 py-3 text-sm leading-6 text-slate-950"
+                    : "ml-8 rounded-2xl bg-lime-400 px-4 py-3 text-sm leading-6 text-slate-950"
                 }
               >
                 {message.content}
@@ -135,19 +135,19 @@ export default function JetizonChatbot() {
               onChange={(event) => setInput(event.target.value)}
               rows={3}
               placeholder="Ask a question about costs, ROI, incentives, or site fit..."
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none transition focus:border-lime-400/50"
             />
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => submitPrompt(input)}
-                className="rounded-2xl bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+                className="rounded-2xl bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
               >
                 Ask
               </button>
               <Link
                 href="/pre-assessment"
-                className="text-sm font-medium text-cyan-300 underline"
+                className="text-sm font-medium text-lime-400 underline"
               >
                 Start Pre-Assessment
               </Link>
@@ -159,7 +159,7 @@ export default function JetizonChatbot() {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="rounded-full border border-cyan-400/20 bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-xl transition hover:scale-[1.02]"
+        className="rounded-full border border-lime-400/20 bg-lime-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-xl transition hover:scale-[1.02]"
       >
         {isOpen ? "Hide Jetizon Help" : "Ask Jetizon"}
       </button>

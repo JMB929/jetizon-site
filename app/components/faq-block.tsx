@@ -31,7 +31,7 @@ export default function FaqBlock() {
     <section id="faq" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
       <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">FAQ</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">FAQ</p>
           <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
             Common questions from host sites.
           </h2>
@@ -50,7 +50,7 @@ export default function FaqBlock() {
               <summary className="cursor-pointer list-none text-lg font-semibold text-white">
                 <div className="flex items-center justify-between gap-4">
                   <span>{faq.question}</span>
-                  <span className="text-cyan-300 transition group-open:rotate-45">+</span>
+                  <span className="text-lime-400 transition group-open:rotate-45">+</span>
                 </div>
               </summary>
               <p className="mt-4 text-sm leading-7 text-slate-300">{faq.answer}</p>

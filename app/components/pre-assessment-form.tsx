@@ -91,7 +91,7 @@ export default function PreAssessmentForm({
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
               placeholder="Your name"
             />
             <ValidationError
@@ -112,7 +112,7 @@ export default function PreAssessmentForm({
               type="tel"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
               placeholder="(646) 555-1234"
             />
           </div>
@@ -130,7 +130,7 @@ export default function PreAssessmentForm({
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
               placeholder="you@example.com"
             />
             <ValidationError
@@ -154,7 +154,7 @@ export default function PreAssessmentForm({
               type="text"
               value={formData.organization}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
               placeholder="Property, business, or portfolio name"
             />
           </div>
@@ -170,7 +170,7 @@ export default function PreAssessmentForm({
               name="interest"
               value={formData.interest}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             >
               <option>Pre-Assessment Request</option>
               <option>Charging Host Opportunity</option>
@@ -198,7 +198,7 @@ export default function PreAssessmentForm({
               name="contactRole"
               value={formData.contactRole}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             >
               <option>Property Owner</option>
               <option>Property Manager</option>
@@ -223,7 +223,7 @@ export default function PreAssessmentForm({
               name="propertyType"
               value={formData.propertyType}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             >
               <option>Multifamily</option>
               <option>Retail / Mixed Use</option>
@@ -247,7 +247,7 @@ export default function PreAssessmentForm({
               name="chargingGoal"
               value={formData.chargingGoal}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             >
               <option>Level 2 Charging</option>
               <option>Micromobility Charging</option>
@@ -270,7 +270,7 @@ export default function PreAssessmentForm({
             type="text"
             value={formData.siteAddress}
             onChange={handleChange}
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             placeholder="Street address of the site to be reviewed"
           />
         </div>
@@ -288,7 +288,7 @@ export default function PreAssessmentForm({
               name="siteControl"
               value={formData.siteControl}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             >
               <option>Owner / Authorized Representative</option>
               <option>Property Manager</option>
@@ -311,7 +311,7 @@ export default function PreAssessmentForm({
               type="text"
               value={formData.parkingSpaces}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
               placeholder="Example: 12 or street frontage only"
             />
           </div>
@@ -328,7 +328,7 @@ export default function PreAssessmentForm({
             value={formData.message}
             onChange={handleChange}
             required
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-cyan-400/50"
+            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-lime-400/50"
             placeholder="Describe the site, the type of charging you are considering, what electrical access you know about, and any timing or rebate goals."
           />
           <ValidationError
@@ -353,7 +353,7 @@ export default function PreAssessmentForm({
             multiple
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.heic,.webp"
             onChange={handleFileChange}
-            className="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-900 px-4 py-4 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
+            className="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-900 px-4 py-4 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-lime-400 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
           />
           <p className="mt-2 text-xs leading-6 text-slate-400">
             Upload site photos, utility documents, sketches, or parking layout references
@@ -365,7 +365,7 @@ export default function PreAssessmentForm({
           </p>
           {selectedFiles.length > 0 && (
             <div className="mt-4 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-lime-400">
                 Selected Files
               </p>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
@@ -385,7 +385,7 @@ export default function PreAssessmentForm({
               checked={formData.authorizationConfirmed}
               onChange={handleChange}
               required
-              className="mt-1 h-4 w-4 rounded border-white/20 bg-slate-950 text-cyan-300 focus:ring-cyan-400/50"
+              className="mt-1 h-4 w-4 rounded border-white/20 bg-slate-950 text-lime-400 focus:ring-lime-400/50"
             />
             <span>
               I confirm that I am authorized to submit this site information, and I want
@@ -410,7 +410,7 @@ export default function PreAssessmentForm({
         <button
           type="submit"
           disabled={state.submitting}
-          className="w-full rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {state.submitting ? "Sending..." : "Request Site Review"}
         </button>

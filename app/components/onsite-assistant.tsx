@@ -169,7 +169,7 @@ export default function OnsiteAssistant() {
       <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
               Field Intake
             </p>
             <h2 className="mt-3 text-2xl font-semibold md:text-3xl">
@@ -189,7 +189,7 @@ export default function OnsiteAssistant() {
             <input
               value={siteName}
               onChange={(event) => setSiteName(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
               placeholder="Hostos Community College"
             />
           </label>
@@ -199,7 +199,7 @@ export default function OnsiteAssistant() {
             <input
               value={siteAddress}
               onChange={(event) => setSiteAddress(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
               placeholder="Bronx, NY"
             />
           </label>
@@ -209,7 +209,7 @@ export default function OnsiteAssistant() {
             <select
               value={hostType}
               onChange={(event) => setHostType(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="multifamily">Multifamily</option>
               <option value="mixed-use">Mixed-use</option>
@@ -225,7 +225,7 @@ export default function OnsiteAssistant() {
             <select
               value={projectType}
               onChange={(event) => setProjectType(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="secure-bike-parking">Secure bike parking</option>
               <option value="secure-escooter-parking">Secure e-scooter parking</option>
@@ -240,7 +240,7 @@ export default function OnsiteAssistant() {
             <select
               value={locationType}
               onChange={(event) => setLocationType(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="private">Private property</option>
               <option value="private-with-layout-questions">
@@ -255,7 +255,7 @@ export default function OnsiteAssistant() {
             <select
               value={hostCommitment}
               onChange={(event) => setHostCommitment(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="strong">Strong</option>
               <option value="unclear">Unclear</option>
@@ -268,7 +268,7 @@ export default function OnsiteAssistant() {
             <select
               value={productReadiness}
               onChange={(event) => setProductReadiness(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="known">Known / established</option>
               <option value="unclear">Unclear</option>
@@ -281,7 +281,7 @@ export default function OnsiteAssistant() {
             <select
               value={complexity}
               onChange={(event) => setComplexity(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="low">Low</option>
               <option value="moderate">Moderate</option>
@@ -296,7 +296,7 @@ export default function OnsiteAssistant() {
             <select
               value={existingParking}
               onChange={(event) => setExistingParking(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
             >
               <option value="yes">Yes</option>
               <option value="no">No</option>
@@ -310,7 +310,7 @@ export default function OnsiteAssistant() {
               value={onsiteNotes}
               onChange={(event) => setOnsiteNotes(event.target.value)}
               rows={5}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
               placeholder="Visible bike theft problem, tight sidewalk clearance, host mentioned security concerns..."
             />
           </label>
@@ -319,7 +319,7 @@ export default function OnsiteAssistant() {
 
       <div className="space-y-6">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             Recommendation
           </p>
           <h2 className="mt-3 text-2xl font-semibold">{bestFitUseCase}</h2>
@@ -360,7 +360,7 @@ export default function OnsiteAssistant() {
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             Photo checklist
           </p>
           <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -371,7 +371,7 @@ export default function OnsiteAssistant() {
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             Next steps
           </p>
           <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">

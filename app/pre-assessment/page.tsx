@@ -5,10 +5,10 @@ export default function PreAssessmentPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.10),transparent_22%),linear-gradient(to_bottom,rgba(15,23,42,0.96),rgba(2,6,23,1))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(132,225,0,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(95,183,0,0.12),transparent_22%),linear-gradient(to_bottom,rgba(7,9,7,0.97),rgba(2,2,2,1))]" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 lg:px-12 lg:py-20">
           <div className="max-w-4xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
               Jetizon Pre-Assessment
             </p>
             <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
@@ -29,7 +29,7 @@ export default function PreAssessmentPage() {
               </Link>
               <a
                 href="mailto:jmbintech@gmail.com"
-                className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+                className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
               >
                 Email Jetizon Directly
               </a>
@@ -41,8 +41,8 @@ export default function PreAssessmentPage() {
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
           <div className="space-y-6">
-            <div className="rounded-[1.75rem] border border-cyan-400/20 bg-cyan-400/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+            <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 What To Upload
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -53,7 +53,7 @@ export default function PreAssessmentPage() {
             </div>
 
             <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 Best Fit For
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
@@ -64,7 +64,7 @@ export default function PreAssessmentPage() {
             </div>
 
             <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 What Happens Next
               </p>
               <ol className="mt-4 space-y-3 text-sm leading-7 text-slate-300">

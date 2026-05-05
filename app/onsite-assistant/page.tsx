@@ -10,7 +10,7 @@ export default function OnsiteAssistantPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 lg:px-12">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+              <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
                 Internal Prototype
               </p>
               <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
@@ -39,7 +39,7 @@ export default function OnsiteAssistantPage() {
       <section className="mx-auto max-w-7xl px-6 py-12 md:px-10 lg:px-12 lg:py-16">
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-            <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+            <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
               Step 1
             </div>
             <p className="mt-3 text-sm leading-7 text-slate-300">
@@ -47,7 +47,7 @@ export default function OnsiteAssistantPage() {
             </p>
           </div>
           <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-            <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+            <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
               Step 2
             </div>
             <p className="mt-3 text-sm leading-7 text-slate-300">
@@ -55,7 +55,7 @@ export default function OnsiteAssistantPage() {
             </p>
           </div>
           <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-            <div className="text-sm uppercase tracking-[0.25em] text-cyan-300">
+            <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
               Step 3
             </div>
             <p className="mt-3 text-sm leading-7 text-slate-300">

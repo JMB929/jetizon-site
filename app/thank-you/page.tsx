@@ -4,7 +4,7 @@ export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-6">
       <div className="max-w-2xl rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-2xl backdrop-blur text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+        <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
           Request Received
         </p>
 
@@ -21,7 +21,7 @@ export default function ThankYouPage() {
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             href="/"
-            className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+            className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
           >
             Return to Homepage
           </Link>
