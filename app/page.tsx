@@ -4,6 +4,18 @@ import FaqBlock from "./components/faq-block";
 import Link from "next/link";
 
 export default function Page() {
+  const operatingModel = [
+    "Screen promising host sites before they drift into the wrong design path.",
+    "Coordinate the early utility, contractor, and partner questions that shape viability.",
+    "Advance selected projects with co-host and partner structures that can actually scale.",
+  ];
+
+  const fitSignals = [
+    "Parking or curb-access already exists",
+    "The site owner can authorize exploration",
+    "Charging supports a clear tenant, guest, or micromobility need",
+  ];
+
   const pillars = [
     {
       title: "Electric Micromobility",
@@ -43,8 +55,29 @@ export default function Page() {
       <section className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(132,225,0,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(95,183,0,0.12),transparent_22%),linear-gradient(to_bottom,rgba(7,9,7,0.97),rgba(2,2,2,1))]" />
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lime-400/70 to-transparent" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 lg:px-12 lg:py-20">
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-300">
+            <div className="rounded-full border border-lime-400/20 bg-lime-400/10 px-4 py-2 uppercase tracking-[0.24em] text-lime-300">
+              EV & Energy Innovation
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.24em] text-slate-400">
+              <a href="#vision" className="transition hover:text-lime-300">
+                Vision
+              </a>
+              <a href="#roadmap" className="transition hover:text-lime-300">
+                Roadmap
+              </a>
+              <a href="#contact" className="transition hover:text-lime-300">
+                Pre-Assessment
+              </a>
+              <a href="#faq" className="transition hover:text-lime-300">
+                FAQ
+              </a>
+            </div>
+          </div>
+
           <div className="grid items-center gap-14 lg:grid-cols-2">
             <div>
               <div className="mb-6">
@@ -59,7 +92,7 @@ export default function Page() {
               </div>
 
               <h1 className="max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl">
-                Helping host sites move from charging interest to real project pathways.
+                Making charging opportunities easier to qualify, structure, and move forward.
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
@@ -85,15 +118,15 @@ export default function Page() {
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-lime-400">NYC</div>
                   <p className="mt-1 text-sm text-slate-300">Urban rollout focus</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-lime-400">EV + Micro</div>
                   <p className="mt-1 text-sm text-slate-300">Charging ecosystem vision</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <div className="text-2xl font-semibold text-lime-400">Smart Safety</div>
                   <p className="mt-1 text-sm text-slate-300">Battery intelligence roadmap</p>
                 </div>
@@ -101,12 +134,50 @@ export default function Page() {
             </div>
 
             <div className="relative flex justify-center">
-              <div className="rounded-[2rem] border border-lime-400/15 bg-white/5 p-6 shadow-2xl backdrop-blur">
-                <img
-                  src="/jetizon-brand-banner.webp"
-                  alt="Jetizon logo large"
-                  className="mx-auto w-[34rem] max-w-full opacity-95 drop-shadow-[0_0_24px_rgba(132,225,0,0.35)]"
-                />
+              <div className="w-full max-w-2xl rounded-[2rem] border border-lime-400/15 bg-white/5 p-6 shadow-2xl backdrop-blur">
+                <div className="rounded-[1.5rem] border border-white/10 bg-black/40 p-5">
+                  <img
+                    src="/jetizon-brand-banner.webp"
+                    alt="Jetizon logo large"
+                    className="mx-auto w-full max-w-[28rem] opacity-95 drop-shadow-[0_0_24px_rgba(132,225,0,0.35)]"
+                  />
+                </div>
+
+                <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr,0.9fr]">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-slate-950/55 p-5">
+                    <p className="text-xs uppercase tracking-[0.24em] text-lime-300">
+                      Current Operating Model
+                    </p>
+                    <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+                      {operatingModel.map((item) => (
+                        <li key={item} className="flex gap-3">
+                          <span className="mt-2 h-2 w-2 rounded-full bg-lime-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-lime-400/20 bg-lime-400/8 p-5">
+                    <p className="text-xs uppercase tracking-[0.24em] text-lime-300">
+                      Strong Host Signals
+                    </p>
+                    <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-200">
+                      {fitSignals.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4">
+                      <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
+                        Best early path
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Start with screening, move into partner-backed deployment,
+                        then scale only the sites that prove real traction.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -115,18 +186,29 @@ export default function Page() {
 
       {/* VISION */}
       <section id="vision" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
-        <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">The Vision</p>
+        <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">The Vision</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
               Jetizon starts with facilitation, not overstatement.
             </h2>
-            <p className="mt-6 text-lg leading-8 text-slate-300">
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-7">
+            <p className="text-lg leading-8 text-slate-300">
               Jetizon&apos;s near-term role is to help identify, screen, and advance
               real charging-site opportunities. Over time, that work is intended
               to grow into a broader charging ecosystem supported by better site
               intelligence, stronger host partnerships, and smarter battery-aware
               infrastructure.
             </p>
+            <div className="mt-6 h-px w-full bg-gradient-to-r from-lime-400/60 via-white/10 to-transparent" />
+            <p className="mt-6 text-sm leading-7 text-slate-400">
+              The goal is not to pretend Jetizon already owns a network. The goal
+              is to build a disciplined pathway from host-site screening to
+              practical deployment and long-term operating leverage.
+            </p>
+          </div>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -162,10 +244,13 @@ export default function Page() {
           {roadmap.map((item) => (
             <div
               key={item.phase}
-              className="rounded-[1.75rem] border border-white/10 bg-white/5 p-7"
+              className="rounded-[1.75rem] border border-white/10 bg-white/5 p-7 shadow-xl"
             >
-              <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
-                {item.phase}
+              <div className="flex items-center justify-between gap-4">
+                <div className="text-sm uppercase tracking-[0.25em] text-lime-400">
+                  {item.phase}
+                </div>
+                <div className="h-px flex-1 bg-gradient-to-r from-lime-400/50 to-transparent" />
               </div>
               <h3 className="mt-3 text-2xl font-semibold">{item.title}</h3>
               <p className="mt-4 text-sm leading-7 text-slate-300">{item.text}</p>
@@ -178,18 +263,18 @@ export default function Page() {
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[0.95fr,1.05fr]">
           <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
-            Preliminary Site Review
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-            A structured first step for host sites exploring charging.
-          </h2>
-          <p className="mt-6 text-lg leading-8 text-slate-300">
-            Jetizon helps property owners, businesses, and host sites understand
-            whether a site appears to be a realistic fit for Level 2 or
-            micromobility charging before time and money are spent on the wrong
-            design path.
-          </p>
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+              Preliminary Site Review
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
+              A structured first step for host sites exploring charging.
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-slate-300">
+              Jetizon helps property owners, businesses, and host sites understand
+              whether a site appears to be a realistic fit for Level 2 or
+              micromobility charging before time and money are spent on the wrong
+              design path.
+            </p>
             <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
                 What We Review
@@ -245,7 +330,7 @@ export default function Page() {
             <img
               src="/andre-neptune-jr.jpg"
               alt="Andre Neptune Jr"
-              className="mb-6 h-40 w-40 rounded-full border border-white/10 object-cover shadow-2xl"
+              className="mb-6 h-40 w-40 rounded-full border border-lime-400/20 object-cover shadow-[0_0_30px_rgba(132,225,0,0.12)]"
             />
             <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Founder</p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">Andre Neptune Jr</h2>
