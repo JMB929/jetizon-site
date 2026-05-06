@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type TrafficLight = "Green" | "Yellow" | "Red";
 type PhotoFieldKey =
@@ -26,6 +26,26 @@ type SelectedPhoto = {
   label: string;
   file: File;
 };
+
+type SavedAssessment = {
+  id: string;
+  savedAt: string;
+  siteName: string;
+  siteAddress: string;
+  overall: TrafficLight;
+  visualScore: TrafficLight | null;
+  bestFitUseCase: string;
+  recommendation: string;
+  agencies: {
+    dob: string;
+    fdny: string;
+    dot: string;
+  };
+  onsiteNotes: string;
+  analysis: PhotoAnalysisResult | null;
+};
+
+const STORAGE_KEY = "jetizon-onsite-assessments";
 
 function scoreClass(score: TrafficLight) {
   if (score === "Green") {
@@ -94,6 +114,8 @@ export default function OnsiteAssistant() {
   const [analysis, setAnalysis] = useState<PhotoAnalysisResult | null>(null);
   const [analysisError, setAnalysisError] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [savedAssessments, setSavedAssessments] = useState<SavedAssessment[]>([]);
+  const [saveMessage, setSaveMessage] = useState("");
 
   const isCabinetProject =
     projectType === "battery-cabinet" || projectType === "charging-rack";
@@ -240,6 +262,21 @@ export default function OnsiteAssistant() {
   const combinedScore = visualScore ? strongestScore(overall, visualScore) : overall;
   const combinedBadge = visualScore ? `${overall} manual / ${visualScore} visual` : overall;
 
+  useEffect(() => {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as SavedAssessment[];
+      if (Array.isArray(parsed)) {
+        setSavedAssessments(parsed);
+      }
+    } catch {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
   const handlePhotoChange = (key: PhotoFieldKey, label: string, file?: File) => {
     setAnalysis(null);
     setAnalysisError("");
@@ -312,6 +349,84 @@ export default function OnsiteAssistant() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const currentAssessment: SavedAssessment = {
+    id: `${Date.now()}`,
+    savedAt: new Date().toISOString(),
+    siteName: siteName || "Unnamed site",
+    siteAddress: siteAddress || "Address not entered",
+    overall,
+    visualScore,
+    bestFitUseCase,
+    recommendation,
+    agencies,
+    onsiteNotes,
+    analysis,
+  };
+
+  const formatAssessmentText = (assessment: SavedAssessment) => {
+    const lines = [
+      "Jetizon Onsite Assessment",
+      "-------------------------",
+      `Saved: ${new Date(assessment.savedAt).toLocaleString()}`,
+      `Site: ${assessment.siteName}`,
+      `Address: ${assessment.siteAddress}`,
+      `Manual score: ${assessment.overall}`,
+      `AI visual score: ${assessment.visualScore || "Not run"}`,
+      `Best-fit use case: ${assessment.bestFitUseCase}`,
+      "",
+      "Recommendation:",
+      assessment.recommendation,
+      "",
+      "Likely agency path:",
+      `- DOB: ${assessment.agencies.dob}`,
+      `- FDNY: ${assessment.agencies.fdny}`,
+      `- DOT: ${assessment.agencies.dot}`,
+      "",
+      "Onsite notes:",
+      assessment.onsiteNotes || "None entered",
+    ];
+
+    if (assessment.analysis) {
+      lines.push(
+        "",
+        "AI Photo Findings:",
+        `- Site context guess: ${assessment.analysis.site_context}`,
+        `- Suggested use case: ${assessment.analysis.suggested_use_case}`,
+        `- Likely complexity: ${assessment.analysis.likely_complexity}`,
+        `- Agency warning: ${assessment.analysis.agency_warning}`,
+        `- AI next step: ${assessment.analysis.next_step}`,
+        "",
+        "Visible positives:",
+        ...assessment.analysis.visible_positives.map((item) => `- ${item}`),
+        "",
+        "Visible concerns:",
+        ...assessment.analysis.visible_concerns.map((item) => `- ${item}`),
+      );
+    }
+
+    return lines.join("\n");
+  };
+
+  const handleSaveAssessment = () => {
+    const next = [currentAssessment, ...savedAssessments].slice(0, 12);
+    setSavedAssessments(next);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    setSaveMessage("Assessment saved in this browser.");
+    window.setTimeout(() => setSaveMessage(""), 2200);
+  };
+
+  const handleDownloadAssessment = (assessment: SavedAssessment = currentAssessment) => {
+    const blob = new Blob([formatAssessmentText(assessment)], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const safeName = assessment.siteName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    anchor.href = url;
+    anchor.download = `${safeName || "jetizon-site"}-assessment.txt`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -564,6 +679,25 @@ export default function OnsiteAssistant() {
               </li>
             </ul>
           </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleSaveAssessment}
+              className="rounded-2xl bg-lime-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+            >
+              Save Assessment
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDownloadAssessment()}
+              className="rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Download Summary
+            </button>
+          </div>
+          {saveMessage && (
+            <p className="mt-3 text-xs leading-6 text-lime-300">{saveMessage}</p>
+          )}
         </div>
 
         {(analysis || analysisError) && (
@@ -696,6 +830,54 @@ export default function OnsiteAssistant() {
             </div>
           )}
         </div>
+
+        {savedAssessments.length > 0 && (
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+              Saved assessments
+            </p>
+            <div className="mt-4 space-y-4">
+              {savedAssessments.map((assessment) => (
+                <div
+                  key={assessment.id}
+                  className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+                >
+                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <p className="font-semibold text-white">{assessment.siteName}</p>
+                      <p className="mt-1 text-sm text-slate-300">{assessment.siteAddress}</p>
+                      <p className="mt-2 text-xs uppercase tracking-[0.22em] text-lime-300">
+                        Saved {new Date(assessment.savedAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span
+                        className={`rounded-full px-3 py-2 text-xs font-semibold ${badgeClass(
+                          assessment.visualScore
+                            ? strongestScore(assessment.overall, assessment.visualScore)
+                            : assessment.overall,
+                        )}`}
+                      >
+                        {assessment.overall}
+                        {assessment.visualScore ? ` / ${assessment.visualScore}` : ""}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadAssessment(assessment)}
+                        className="rounded-full border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/10"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    {assessment.bestFitUseCase}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
