@@ -594,7 +594,7 @@ export default function OnsiteAssistant() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur md:p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
@@ -611,7 +611,7 @@ export default function OnsiteAssistant() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <div className="mt-6 grid gap-4 md:mt-8 md:gap-5 md:grid-cols-2">
           <label className="text-sm text-slate-300">
             <span className="mb-2 block font-medium text-white">Site name</span>
             <input
@@ -1014,7 +1014,7 @@ export default function OnsiteAssistant() {
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5 md:space-y-6">
         <div className="rounded-[2rem] border border-lime-400/20 bg-lime-400/5 p-6 shadow-2xl backdrop-blur">
           <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
             How to use this tool
@@ -1057,7 +1057,7 @@ export default function OnsiteAssistant() {
               </li>
             </ul>
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 hidden flex-wrap gap-3 md:flex">
             <button
               type="button"
               onClick={handleSaveAssessment}
@@ -1274,6 +1274,25 @@ export default function OnsiteAssistant() {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-slate-950/95 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 backdrop-blur md:hidden">
+        <div className="mx-auto flex max-w-7xl gap-3">
+          <button
+            type="button"
+            onClick={handleSaveAssessment}
+            className="flex-1 rounded-2xl bg-lime-400 px-4 py-3 text-sm font-semibold text-slate-950 transition active:scale-[0.99]"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDownloadAssessment()}
+            className="flex-1 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition active:scale-[0.99]"
+          >
+            Download
+          </button>
+        </div>
       </div>
     </div>
   );
