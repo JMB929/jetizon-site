@@ -27,6 +27,8 @@ type SelectedPhoto = {
   file: File;
 };
 
+type TernaryChoice = "yes" | "no" | "unclear";
+
 type SavedAssessment = {
   id: string;
   savedAt: string;
@@ -40,6 +42,14 @@ type SavedAssessment = {
     dob: string;
     fdny: string;
     dot: string;
+  };
+  aerialReview: {
+    status: "Not started" | "Partial" | "Completed";
+    mapSource: string;
+    siteContext: string;
+    score: TrafficLight | null;
+    likelyInstallZone: string;
+    summary: string;
   };
   onsiteNotes: string;
   analysis: PhotoAnalysisResult | null;
@@ -81,6 +91,12 @@ function strongestScore(a: TrafficLight, b: TrafficLight): TrafficLight {
   return severityRank(a) >= severityRank(b) ? a : b;
 }
 
+function ternaryLabel(value: TernaryChoice) {
+  if (value === "yes") return "Yes";
+  if (value === "no") return "No";
+  return "Unclear";
+}
+
 async function fileToDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -108,6 +124,14 @@ export default function OnsiteAssistant() {
   const [complexity, setComplexity] = useState("low");
   const [existingParking, setExistingParking] = useState("yes");
   const [onsiteNotes, setOnsiteNotes] = useState("");
+  const [mapSource, setMapSource] = useState("google-satellite");
+  const [parkingLotVisible, setParkingLotVisible] = useState<TernaryChoice>("unclear");
+  const [installZoneVisible, setInstallZoneVisible] = useState<TernaryChoice>("unclear");
+  const [publicSpaceExposure, setPublicSpaceExposure] = useState<TernaryChoice>("unclear");
+  const [drivewayAccessVisible, setDrivewayAccessVisible] = useState<TernaryChoice>("unclear");
+  const [layoutRead, setLayoutRead] = useState("unclear");
+  const [likelyInstallZone, setLikelyInstallZone] = useState("");
+  const [aerialNotes, setAerialNotes] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<
     Partial<Record<PhotoFieldKey, SelectedPhoto>>
   >({});
@@ -170,6 +194,108 @@ export default function OnsiteAssistant() {
     parkingSignalScore = "Yellow";
   }
 
+  const aerialInputsStarted =
+    parkingLotVisible !== "unclear" ||
+    installZoneVisible !== "unclear" ||
+    publicSpaceExposure !== "unclear" ||
+    drivewayAccessVisible !== "unclear" ||
+    layoutRead !== "unclear" ||
+    Boolean(likelyInstallZone.trim()) ||
+    Boolean(aerialNotes.trim());
+
+  let aerialScore: TrafficLight | null = null;
+  if (aerialInputsStarted) {
+    aerialScore = "Green";
+
+    if (
+      publicSpaceExposure === "yes" ||
+      layoutRead === "tight" ||
+      installZoneVisible === "no"
+    ) {
+      aerialScore = "Red";
+    } else if (
+      parkingLotVisible === "unclear" ||
+      installZoneVisible === "unclear" ||
+      drivewayAccessVisible === "unclear" ||
+      publicSpaceExposure === "unclear" ||
+      layoutRead === "mixed"
+    ) {
+      aerialScore = "Yellow";
+    }
+  }
+
+  let aerialReviewStatus: "Not started" | "Partial" | "Completed" = "Not started";
+  if (aerialInputsStarted) {
+    const completeInputs =
+      parkingLotVisible !== "unclear" &&
+      installZoneVisible !== "unclear" &&
+      publicSpaceExposure !== "unclear" &&
+      drivewayAccessVisible !== "unclear" &&
+      layoutRead !== "unclear";
+
+    aerialReviewStatus = completeInputs ? "Completed" : "Partial";
+  }
+
+  let aerialSiteContext = "Bird's-eye review not started";
+  if (publicSpaceExposure === "yes" || locationType === "public-space") {
+    aerialSiteContext = "Public-space adjacent";
+  } else if (
+    layoutRead === "tight" ||
+    layoutRead === "mixed" ||
+    locationType === "private-with-layout-questions"
+  ) {
+    aerialSiteContext = "Private property with layout questions";
+  } else if (aerialInputsStarted) {
+    aerialSiteContext = "Private property";
+  }
+
+  const aerialPositives: string[] = [];
+  const aerialConcerns: string[] = [];
+
+  if (parkingLotVisible === "yes") {
+    aerialPositives.push("Visible lot or staging area from aerial review.");
+  } else if (parkingLotVisible === "no") {
+    aerialConcerns.push("No obvious lot or setback area visible from above.");
+  }
+
+  if (installZoneVisible === "yes") {
+    aerialPositives.push("Likely install zone appears visible from bird's-eye view.");
+  } else if (installZoneVisible === "no") {
+    aerialConcerns.push("No clear install zone is visible from bird's-eye review.");
+  }
+
+  if (drivewayAccessVisible === "yes") {
+    aerialPositives.push("Driveway or access pattern appears readable from above.");
+  } else if (drivewayAccessVisible === "no") {
+    aerialConcerns.push("Access pattern is not obvious from aerial review.");
+  }
+
+  if (publicSpaceExposure === "yes") {
+    aerialConcerns.push("Site appears exposed to sidewalk, curb, or street-space issues.");
+  } else if (publicSpaceExposure === "no") {
+    aerialPositives.push("Site appears to sit more cleanly within private-property space.");
+  }
+
+  if (layoutRead === "clean") {
+    aerialPositives.push("Overall aerial layout reads as straightforward.");
+  } else if (layoutRead === "mixed") {
+    aerialConcerns.push("Layout shows some aerial ambiguity or circulation questions.");
+  } else if (layoutRead === "tight") {
+    aerialConcerns.push("Layout appears tight or awkward from above.");
+  }
+
+  const aerialSummary = !aerialInputsStarted
+    ? "Bird's-eye review has not been completed yet."
+    : `${aerialSiteContext}. ${
+        aerialScore === "Red"
+          ? "Aerial review shows a constrained or public-space-sensitive layout."
+          : aerialScore === "Yellow"
+            ? "Aerial review shows a possible site with layout or clarity questions."
+            : "Aerial review suggests a cleaner private-property layout."
+      } ${likelyInstallZone.trim() ? `Likely install zone: ${likelyInstallZone.trim()}.` : ""} ${
+        aerialNotes.trim() ? `Notes: ${aerialNotes.trim()}` : ""
+      }`.trim();
+
   const scores = [
     projectScore,
     siteControlScore,
@@ -177,6 +303,7 @@ export default function OnsiteAssistant() {
     approvalScore,
     productScore,
     parkingSignalScore,
+    ...(aerialScore ? [aerialScore] : []),
   ];
 
   const redCount = scores.filter((score) => score === "Red").length;
@@ -244,6 +371,7 @@ export default function OnsiteAssistant() {
   const usageSteps = [
     "Walk the site first and take photos before filling anything in.",
     "Choose the closest host type, project type, and location type.",
+    "Use the Bird's-Eye Review to check the address in satellite view before trusting ground-level photos alone.",
     "Be honest about host commitment, product readiness, and complexity.",
     "Use notes for what you actually observed onsite, not assumptions.",
     "Read the Green / Yellow / Red result before bringing in a vendor or contractor.",
@@ -259,8 +387,27 @@ export default function OnsiteAssistant() {
 
   const selectedPhotoCount = Object.keys(selectedPhotos).length;
   const visualScore = analysis?.visual_score ?? null;
-  const combinedScore = visualScore ? strongestScore(overall, visualScore) : overall;
-  const combinedBadge = visualScore ? `${overall} manual / ${visualScore} visual` : overall;
+  const manualWithAerial = aerialScore ? strongestScore(overall, aerialScore) : overall;
+  const combinedScore = visualScore ? strongestScore(manualWithAerial, visualScore) : manualWithAerial;
+  const finalRecommendation =
+    aerialScore === "Red" && overall !== "Red"
+      ? "Bird's-eye review shows a constrained or public-space-sensitive layout. Do not treat this as a clean early deployment until the layout and access risks are resolved."
+      : recommendation;
+  const combinedBadge = [
+    overall,
+    aerialScore ? `${aerialScore} aerial` : null,
+    visualScore ? `${visualScore} visual` : null,
+  ]
+    .filter(Boolean)
+    .join(" / ");
+
+  const encodedAddress = encodeURIComponent(siteAddress.trim());
+  const googleSatelliteUrl = encodedAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodedAddress}&basemap=satellite`
+    : "";
+  const googleMapUrl = encodedAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
+    : "";
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -356,11 +503,19 @@ export default function OnsiteAssistant() {
     savedAt: new Date().toISOString(),
     siteName: siteName || "Unnamed site",
     siteAddress: siteAddress || "Address not entered",
-    overall,
+    overall: manualWithAerial,
     visualScore,
     bestFitUseCase,
-    recommendation,
+    recommendation: finalRecommendation,
     agencies,
+    aerialReview: {
+      status: aerialReviewStatus,
+      mapSource,
+      siteContext: aerialSiteContext,
+      score: aerialScore,
+      likelyInstallZone: likelyInstallZone.trim(),
+      summary: aerialSummary,
+    },
     onsiteNotes,
     analysis,
   };
@@ -372,7 +527,7 @@ export default function OnsiteAssistant() {
       `Saved: ${new Date(assessment.savedAt).toLocaleString()}`,
       `Site: ${assessment.siteName}`,
       `Address: ${assessment.siteAddress}`,
-      `Manual score: ${assessment.overall}`,
+      `Assessment score: ${assessment.overall}`,
       `AI visual score: ${assessment.visualScore || "Not run"}`,
       `Best-fit use case: ${assessment.bestFitUseCase}`,
       "",
@@ -383,6 +538,14 @@ export default function OnsiteAssistant() {
       `- DOB: ${assessment.agencies.dob}`,
       `- FDNY: ${assessment.agencies.fdny}`,
       `- DOT: ${assessment.agencies.dot}`,
+      "",
+      "Bird's-Eye Review:",
+      `- Status: ${assessment.aerialReview.status}`,
+      `- Map source: ${assessment.aerialReview.mapSource}`,
+      `- Site context: ${assessment.aerialReview.siteContext}`,
+      `- Bird's-eye score: ${assessment.aerialReview.score || "Not scored"}`,
+      `- Likely install zone: ${assessment.aerialReview.likelyInstallZone || "Not entered"}`,
+      `- Summary: ${assessment.aerialReview.summary}`,
       "",
       "Onsite notes:",
       assessment.onsiteNotes || "None entered",
@@ -580,6 +743,221 @@ export default function OnsiteAssistant() {
             />
           </label>
 
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 md:col-span-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.25em] text-lime-400">
+                  Bird&apos;s-Eye Review
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Use the site address to run a map or satellite-based layout check.
+                  This helps you judge whether the property looks cleanly private,
+                  layout-constrained, or public-space-adjacent before relying on
+                  photos alone.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={googleSatelliteUrl || undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                    googleSatelliteUrl
+                      ? "bg-lime-400 text-slate-950 hover:scale-[1.01]"
+                      : "cursor-not-allowed bg-white/10 text-slate-500"
+                  }`}
+                  aria-disabled={!googleSatelliteUrl}
+                >
+                  Open Satellite View
+                </a>
+                <a
+                  href={googleMapUrl || undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                    googleMapUrl
+                      ? "border-white/15 bg-white/5 text-white hover:bg-white/10"
+                      : "cursor-not-allowed border-white/10 bg-white/5 text-slate-500"
+                  }`}
+                  aria-disabled={!googleMapUrl}
+                >
+                  Open Map View
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Map source</span>
+                <select
+                  value={mapSource}
+                  onChange={(event) => setMapSource(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="google-satellite">Google Maps satellite</option>
+                  <option value="google-map">Google Maps standard</option>
+                  <option value="google-earth">Google Earth</option>
+                  <option value="bing-aerial">Bing aerial</option>
+                  <option value="nyc-zola">NYC ZoLa / local GIS</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Layout read</span>
+                <select
+                  value={layoutRead}
+                  onChange={(event) => setLayoutRead(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="unclear">Not reviewed yet</option>
+                  <option value="clean">Clean / straightforward</option>
+                  <option value="mixed">Some layout questions</option>
+                  <option value="tight">Tight / awkward / constrained</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Parking lot or setback visible
+                </span>
+                <select
+                  value={parkingLotVisible}
+                  onChange={(event) =>
+                    setParkingLotVisible(event.target.value as TernaryChoice)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="unclear">Not reviewed yet</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Clear install zone visible
+                </span>
+                <select
+                  value={installZoneVisible}
+                  onChange={(event) =>
+                    setInstallZoneVisible(event.target.value as TernaryChoice)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="unclear">Not reviewed yet</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Public-space exposure visible
+                </span>
+                <select
+                  value={publicSpaceExposure}
+                  onChange={(event) =>
+                    setPublicSpaceExposure(event.target.value as TernaryChoice)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="unclear">Not reviewed yet</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Driveway / access pattern visible
+                </span>
+                <select
+                  value={drivewayAccessVisible}
+                  onChange={(event) =>
+                    setDrivewayAccessVisible(event.target.value as TernaryChoice)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                >
+                  <option value="unclear">Not reviewed yet</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300 md:col-span-2">
+                <span className="mb-2 block font-medium text-white">Likely install zone</span>
+                <input
+                  value={likelyInstallZone}
+                  onChange={(event) => setLikelyInstallZone(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                  placeholder="Rear lot edge near private parking row"
+                />
+              </label>
+
+              <label className="text-sm text-slate-300 md:col-span-2">
+                <span className="mb-2 block font-medium text-white">Aerial notes</span>
+                <textarea
+                  value={aerialNotes}
+                  onChange={(event) => setAerialNotes(event.target.value)}
+                  rows={4}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-lime-400"
+                  placeholder="Lot appears internal to the property. Sidewalk frontage is limited but circulation looks tight near the main entrance..."
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className={`rounded-2xl border p-4 ${scoreClass(aerialScore || "Yellow")}`}>
+                <p className="text-sm font-semibold text-white">Bird&apos;s-eye score</p>
+                <p className="mt-2 text-sm leading-7">
+                  {aerialScore || "Not started"} from satellite or map review.
+                </p>
+                <p className="mt-3 text-xs uppercase tracking-[0.22em] text-lime-300">
+                  Status: {aerialReviewStatus}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-sm font-semibold text-white">Site context</p>
+                <p className="mt-2 text-sm leading-7 text-slate-300">{aerialSiteContext}</p>
+                <p className="mt-3 text-xs leading-6 text-slate-400">
+                  Parking visible: {ternaryLabel(parkingLotVisible)} | Install zone:{" "}
+                  {ternaryLabel(installZoneVisible)} | Public exposure:{" "}
+                  {ternaryLabel(publicSpaceExposure)}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+              <p className="text-sm font-semibold text-white">Bird&apos;s-eye summary</p>
+              <p className="mt-2 text-sm leading-7 text-slate-300">{aerialSummary}</p>
+              {!!aerialPositives.length && (
+                <div className="mt-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
+                    Visible positives
+                  </p>
+                  <ul className="mt-2 space-y-2 text-sm leading-7 text-slate-300">
+                    {aerialPositives.map((item) => (
+                      <li key={item}>- {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {!!aerialConcerns.length && (
+                <div className="mt-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-amber-300">
+                    Visible concerns
+                  </p>
+                  <ul className="mt-2 space-y-2 text-sm leading-7 text-slate-300">
+                    {aerialConcerns.map((item) => (
+                      <li key={item}>- {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-5 md:col-span-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="max-w-2xl">
@@ -656,7 +1034,7 @@ export default function OnsiteAssistant() {
             Recommendation
           </p>
           <h2 className="mt-3 text-2xl font-semibold">{bestFitUseCase}</h2>
-          <p className="mt-4 text-sm leading-7 text-slate-300">{recommendation}</p>
+          <p className="mt-4 text-sm leading-7 text-slate-300">{finalRecommendation}</p>
           {visualScore && (
             <div className={`mt-6 rounded-2xl border p-4 ${scoreClass(visualScore)}`}>
               <p className="text-sm font-semibold">AI visible-condition signal</p>
@@ -777,6 +1155,7 @@ export default function OnsiteAssistant() {
             ["Project type", projectScore],
             ["Site control", siteControlScore],
             ["Location type", locationScore],
+            ["Bird's-eye review", aerialScore || "Yellow"],
             ["Approval complexity", approvalScore],
             ["Product readiness", productScore],
             ["Parking signal", parkingSignalScore],
@@ -822,6 +1201,18 @@ export default function OnsiteAssistant() {
                 <span className="font-medium text-white">Address:</span>{" "}
                 {siteAddress || "Not entered"}
               </p>
+              {aerialReviewStatus !== "Not started" && (
+                <>
+                  <p className="mt-2">
+                    <span className="font-medium text-white">Bird&apos;s-eye:</span>{" "}
+                    {aerialSiteContext}
+                  </p>
+                  <p className="mt-1">
+                    <span className="font-medium text-white">Aerial summary:</span>{" "}
+                    {aerialSummary}
+                  </p>
+                </>
+              )}
               {onsiteNotes && (
                 <p className="mt-2">
                   <span className="font-medium text-white">Notes:</span> {onsiteNotes}
@@ -849,13 +1240,18 @@ export default function OnsiteAssistant() {
                       <p className="mt-2 text-xs uppercase tracking-[0.22em] text-lime-300">
                         Saved {new Date(assessment.savedAt).toLocaleString()}
                       </p>
+                      <p className="mt-2 text-sm text-slate-300">
+                        {assessment.aerialReview.siteContext}
+                      </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <span
                         className={`rounded-full px-3 py-2 text-xs font-semibold ${badgeClass(
                           assessment.visualScore
                             ? strongestScore(assessment.overall, assessment.visualScore)
-                            : assessment.overall,
+                            : assessment.aerialReview.score
+                              ? assessment.overall
+                              : assessment.overall,
                         )}`}
                       >
                         {assessment.overall}
