@@ -3,6 +3,29 @@
 import { useState } from "react";
 
 type TrafficLight = "Green" | "Yellow" | "Red";
+type PhotoFieldKey =
+  | "frontage"
+  | "installZone"
+  | "existingParking"
+  | "electricalAccess"
+  | "circulation";
+
+type PhotoAnalysisResult = {
+  site_context: string;
+  visual_score: TrafficLight;
+  visible_positives: string[];
+  visible_concerns: string[];
+  suggested_use_case: string;
+  likely_complexity: string;
+  agency_warning: string;
+  next_step: string;
+  confidence_note: string;
+};
+
+type SelectedPhoto = {
+  label: string;
+  file: File;
+};
 
 function scoreClass(score: TrafficLight) {
   if (score === "Green") {
@@ -28,6 +51,32 @@ function badgeClass(score: TrafficLight) {
   return "bg-rose-300 text-slate-950";
 }
 
+function severityRank(score: TrafficLight) {
+  if (score === "Red") return 3;
+  if (score === "Yellow") return 2;
+  return 1;
+}
+
+function strongestScore(a: TrafficLight, b: TrafficLight): TrafficLight {
+  return severityRank(a) >= severityRank(b) ? a : b;
+}
+
+async function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
+      }
+
+      reject(new Error("Could not read image file."));
+    };
+    reader.onerror = () => reject(new Error("Could not read image file."));
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function OnsiteAssistant() {
   const [siteName, setSiteName] = useState("");
   const [siteAddress, setSiteAddress] = useState("");
@@ -39,6 +88,12 @@ export default function OnsiteAssistant() {
   const [complexity, setComplexity] = useState("low");
   const [existingParking, setExistingParking] = useState("yes");
   const [onsiteNotes, setOnsiteNotes] = useState("");
+  const [selectedPhotos, setSelectedPhotos] = useState<
+    Partial<Record<PhotoFieldKey, SelectedPhoto>>
+  >({});
+  const [analysis, setAnalysis] = useState<PhotoAnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const isCabinetProject =
     projectType === "battery-cabinet" || projectType === "charging-rack";
@@ -172,6 +227,93 @@ export default function OnsiteAssistant() {
     "Read the Green / Yellow / Red result before bringing in a vendor or contractor.",
   ];
 
+  const photoFieldConfig: Array<{ key: PhotoFieldKey; label: string }> = [
+    { key: "frontage", label: "Site frontage" },
+    { key: "installZone", label: "Proposed install zone" },
+    { key: "existingParking", label: "Existing bike or e-scooter parking" },
+    { key: "electricalAccess", label: "Electrical / panel access" },
+    { key: "circulation", label: "Sidewalk, curb, or circulation" },
+  ];
+
+  const selectedPhotoCount = Object.keys(selectedPhotos).length;
+  const visualScore = analysis?.visual_score ?? null;
+  const combinedScore = visualScore ? strongestScore(overall, visualScore) : overall;
+  const combinedBadge = visualScore ? `${overall} manual / ${visualScore} visual` : overall;
+
+  const handlePhotoChange = (key: PhotoFieldKey, label: string, file?: File) => {
+    setAnalysis(null);
+    setAnalysisError("");
+
+    if (!file) {
+      setSelectedPhotos((current) => {
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+      return;
+    }
+
+    setSelectedPhotos((current) => ({
+      ...current,
+      [key]: { label, file },
+    }));
+  };
+
+  const handleAnalyzePhotos = async () => {
+    try {
+      setIsAnalyzing(true);
+      setAnalysis(null);
+      setAnalysisError("");
+
+      const photos = await Promise.all(
+        Object.values(selectedPhotos).map(async (photo) => ({
+          label: photo.label,
+          fileName: photo.file.name,
+          dataUrl: await fileToDataUrl(photo.file),
+        })),
+      );
+
+      const response = await fetch("/api/onsite-photo-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          siteName,
+          siteAddress,
+          hostType,
+          projectType,
+          locationType,
+          hostCommitment,
+          productReadiness,
+          complexity,
+          existingParking,
+          onsiteNotes,
+          photos,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        analysis?: PhotoAnalysisResult;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.analysis) {
+        throw new Error(payload.error || "AI photo analysis could not be completed.");
+      }
+
+      setAnalysis(payload.analysis);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "AI photo analysis could not be completed.";
+      setAnalysisError(message);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   return (
     <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
       <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
@@ -185,9 +327,9 @@ export default function OnsiteAssistant() {
             </h2>
           </div>
           <div
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${badgeClass(overall)}`}
+            className={`rounded-full px-4 py-2 text-sm font-semibold ${badgeClass(combinedScore)}`}
           >
-            {overall}
+            {combinedBadge}
           </div>
         </div>
 
@@ -322,6 +464,60 @@ export default function OnsiteAssistant() {
               placeholder="Visible bike theft problem, tight sidewalk clearance, host mentioned security concerns..."
             />
           </label>
+
+          <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-5 md:col-span-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.25em] text-lime-400">
+                  AI photo analysis
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Upload labeled site photos to get an AI-assisted visible-condition
+                  screening layer. This helps flag layout, access, and public-space
+                  risks before deeper technical review.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleAnalyzePhotos}
+                disabled={isAnalyzing || selectedPhotoCount === 0}
+                className="rounded-2xl bg-lime-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isAnalyzing ? "Analyzing..." : "Analyze Site Photos"}
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {photoFieldConfig.map((photoField) => (
+                <label key={photoField.key} className="text-sm text-slate-300">
+                  <span className="mb-2 block font-medium text-white">{photoField.label}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) =>
+                      handlePhotoChange(
+                        photoField.key,
+                        photoField.label,
+                        event.target.files?.[0],
+                      )
+                    }
+                    className="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-950/60 px-4 py-3 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                  />
+                  {selectedPhotos[photoField.key] && (
+                    <p className="mt-2 text-xs leading-6 text-lime-300">
+                      Selected: {selectedPhotos[photoField.key]?.file.name}
+                    </p>
+                  )}
+                </label>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs leading-6 text-slate-400">
+              This review is based only on visible conditions in submitted photos. It
+              does not confirm electrical capacity, permit approval, or final project
+              feasibility.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -346,6 +542,14 @@ export default function OnsiteAssistant() {
           </p>
           <h2 className="mt-3 text-2xl font-semibold">{bestFitUseCase}</h2>
           <p className="mt-4 text-sm leading-7 text-slate-300">{recommendation}</p>
+          {visualScore && (
+            <div className={`mt-6 rounded-2xl border p-4 ${scoreClass(visualScore)}`}>
+              <p className="text-sm font-semibold">AI visible-condition signal</p>
+              <p className="mt-2 text-sm leading-7">
+                The uploaded photos were screened as <strong>{visualScore}</strong>.
+              </p>
+            </div>
+          )}
           <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
             <p className="text-sm font-semibold text-white">Likely agency path</p>
             <ul className="mt-3 space-y-2 text-sm text-slate-300">
@@ -361,6 +565,78 @@ export default function OnsiteAssistant() {
             </ul>
           </div>
         </div>
+
+        {(analysis || analysisError) && (
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+              AI photo findings
+            </p>
+
+            {analysisError && (
+              <div className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-400/10 p-4 text-sm leading-7 text-rose-200">
+                {analysisError}
+              </div>
+            )}
+
+            {analysis && (
+              <div className="mt-4 space-y-5 text-sm text-slate-300">
+                <div className={`rounded-2xl border p-4 ${scoreClass(analysis.visual_score)}`}>
+                  <p className="text-sm font-semibold text-white">Visual score</p>
+                  <p className="mt-2">
+                    <strong>{analysis.visual_score}</strong> based on visible site
+                    conditions.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="font-semibold text-white">Site context guess</p>
+                  <p className="mt-2 leading-7">{analysis.site_context}</p>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                    <p className="font-semibold text-white">Visible positives</p>
+                    <ul className="mt-3 space-y-2 leading-7">
+                      {analysis.visible_positives.map((item) => (
+                        <li key={item}>- {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                    <p className="font-semibold text-white">Visible concerns</p>
+                    <ul className="mt-3 space-y-2 leading-7">
+                      {analysis.visible_concerns.map((item) => (
+                        <li key={item}>- {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="font-semibold text-white">Suggested use case</p>
+                  <p className="mt-2 leading-7">{analysis.suggested_use_case}</p>
+                  <p className="mt-3 text-xs uppercase tracking-[0.22em] text-lime-300">
+                    Likely complexity: {analysis.likely_complexity}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="font-semibold text-white">Agency warning</p>
+                  <p className="mt-2 leading-7">{analysis.agency_warning}</p>
+                </div>
+
+                <div className="rounded-2xl border border-lime-400/20 bg-lime-400/5 p-4">
+                  <p className="font-semibold text-white">AI next step</p>
+                  <p className="mt-2 leading-7">{analysis.next_step}</p>
+                  <p className="mt-3 text-xs leading-6 text-slate-400">
+                    {analysis.confidence_note}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           {[
