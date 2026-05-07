@@ -57,6 +57,29 @@ type SavedAssessment = {
 
 const STORAGE_KEY = "jetizon-onsite-assessments";
 
+const HOST_TYPE_LABELS: Record<string, string> = {
+  multifamily: "Multifamily",
+  "mixed-use": "Mixed-use",
+  university: "University / campus",
+  hospitality: "Hospitality",
+  community: "Community facility",
+  retail: "Retail / commercial",
+};
+
+const PROJECT_TYPE_LABELS: Record<string, string> = {
+  "secure-bike-parking": "Secure bike parking",
+  "secure-escooter-parking": "Secure e-scooter parking",
+  "simple-charging": "Simple charging access",
+  "battery-cabinet": "Battery charging cabinet",
+  "charging-rack": "Charging rack / enclosure",
+};
+
+const LOCATION_TYPE_LABELS: Record<string, string> = {
+  private: "Private property",
+  "private-with-layout-questions": "Private property with layout questions",
+  "public-space": "Touches sidewalk, curb, or street space",
+};
+
 function scoreClass(score: TrafficLight) {
   if (score === "Green") {
     return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
@@ -95,6 +118,16 @@ function ternaryLabel(value: TernaryChoice) {
   if (value === "yes") return "Yes";
   if (value === "no") return "No";
   return "Unclear";
+}
+
+function downloadTextFile(fileName: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 async function fileToDataUrl(file: File) {
@@ -520,6 +553,141 @@ export default function OnsiteAssistant() {
     analysis,
   };
 
+  const hostTypeLabel = HOST_TYPE_LABELS[hostType] || hostType;
+  const projectTypeLabel = PROJECT_TYPE_LABELS[projectType] || projectType;
+  const locationTypeLabel = LOCATION_TYPE_LABELS[locationType] || locationType;
+  const safeName = (siteName || "jetizon-site").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const missingInfo = [
+    siteAddress ? null : "Exact site address",
+    siteName ? null : "Named property or site",
+    likelyInstallZone.trim() ? null : "Likely install zone",
+    onsiteNotes.trim() ? null : "Ground-level onsite notes",
+    aerialInputsStarted ? null : "Bird's-eye review",
+    analysis ? null : "AI photo screening",
+  ].filter(Boolean) as string[];
+
+  const propertyReportDraft = [
+    "# Jetizon Property-Specific Pre-Assessment Report",
+    "",
+    "## Cover Information",
+    `- Property name: ${siteName || "Not entered"}`,
+    `- Property address: ${siteAddress || "Not entered"}`,
+    `- Assessment date: ${new Date().toLocaleDateString()}`,
+    `- Host type: ${hostTypeLabel}`,
+    `- Proposed deployment type: ${projectTypeLabel}`,
+    "",
+    "## Executive Summary",
+    `- Result: ${manualWithAerial}`,
+    `- Best-fit first deployment: ${bestFitUseCase}`,
+    `- Main opportunity: ${finalRecommendation}`,
+    `- Main constraint: ${aerialScore === "Red" ? aerialSummary : analysis?.agency_warning || "No major visual blocker flagged yet."}`,
+    "",
+    "## Bird's-Eye Review",
+    `- Status: ${aerialReviewStatus}`,
+    `- Map source: ${mapSource}`,
+    `- Site context: ${aerialSiteContext}`,
+    `- Bird's-eye score: ${aerialScore || "Not started"}`,
+    `- Likely install zone: ${likelyInstallZone || "Not entered"}`,
+    `- Summary: ${aerialSummary}`,
+    "",
+    "## Ground-Level Review",
+    `- Existing parking visible: ${existingParking}`,
+    `- Onsite notes: ${onsiteNotes || "None entered"}`,
+    analysis
+      ? `- AI visual summary: ${analysis.site_context}; ${analysis.next_step}`
+      : "- AI visual summary: Not run",
+    "",
+    "## Early Feasibility Read",
+    `- Location type: ${locationTypeLabel}`,
+    `- Product readiness: ${productReadiness}`,
+    `- Complexity read: ${complexity}`,
+    `- Likely agency path: DOB ${agencies.dob}, FDNY ${agencies.fdny}, DOT ${agencies.dot}`,
+    "",
+    "## Missing Information",
+    ...(missingInfo.length ? missingInfo.map((item) => `- ${item}`) : ["- No major missing inputs flagged from the current form state."]),
+    "",
+    "## Recommended Next Step",
+    ...nextSteps.map((step) => `- ${step}`),
+  ].join("\n");
+
+  const clientSummaryDraft = [
+    "# Jetizon Preliminary Property Review",
+    "",
+    `Property: ${siteName || "Not entered"}`,
+    `Address: ${siteAddress || "Not entered"}`,
+    `Property type: ${hostTypeLabel}`,
+    `Recommended first use case: ${bestFitUseCase}`,
+    "",
+    "## Current Read",
+    `Jetizon currently reads this opportunity as ${manualWithAerial}. ${finalRecommendation}`,
+    "",
+    "## What Jetizon Reviewed",
+    `- Site address and layout category: ${locationTypeLabel}`,
+    `- Bird's-eye review: ${aerialReviewStatus}`,
+    `- Ground-level notes: ${onsiteNotes || "Pending more onsite notes"}`,
+    `- Program and approval path screen: DOB ${agencies.dob}, FDNY ${agencies.fdny}, DOT ${agencies.dot}`,
+    "",
+    "## Bird's-Eye Summary",
+    aerialSummary,
+    "",
+    "## Next Step",
+    nextSteps[0] || "Gather more site information before advancing.",
+    "",
+    "## Important Note",
+    "This is an early Jetizon screening summary. It is not final engineering, permit approval, or a locked installation quote.",
+  ].join("\n");
+
+  const proposalStarterDraft = [
+    "# Jetizon Proposal Starter",
+    "",
+    `Opportunity: ${siteName || "Not entered"}`,
+    `Address: ${siteAddress || "Not entered"}`,
+    `Host type: ${hostTypeLabel}`,
+    `Project type: ${projectTypeLabel}`,
+    "",
+    "## Scope Direction",
+    `Jetizon is proposing an early-stage site development and screening path for ${siteName || "the property"}, focused first on ${bestFitUseCase.toLowerCase()}.`,
+    "",
+    "## Why This Site",
+    finalRecommendation,
+    "",
+    "## Current Site Signals",
+    `- Assessment score: ${manualWithAerial}`,
+    `- Bird's-eye review: ${aerialScore || "Not started"} (${aerialSiteContext})`,
+    `- Host commitment: ${hostCommitment}`,
+    `- Product readiness: ${productReadiness}`,
+    "",
+    "## Recommended Jetizon Next Step",
+    nextSteps[0] || "Complete the next assessment step.",
+    "",
+    "## Proposal Notes To Finalize",
+    ...(missingInfo.length ? missingInfo.map((item) => `- ${item}`) : ["- Add pricing, scope, and external partner details as needed."]),
+  ].join("\n");
+
+  const documentDrafts = [
+    {
+      title: "Property report",
+      description: "Internal report shell for one real site assessment.",
+      preview: `Result: ${manualWithAerial}. ${aerialSummary}`,
+      fileName: `${safeName || "jetizon-site"}-property-report.md`,
+      content: propertyReportDraft,
+    },
+    {
+      title: "Client summary",
+      description: "Cleaner host-facing summary of the current screening read.",
+      preview: `Recommended first use case: ${bestFitUseCase}. Next step: ${nextSteps[0] || "Gather more information."}`,
+      fileName: `${safeName || "jetizon-site"}-client-summary.md`,
+      content: clientSummaryDraft,
+    },
+    {
+      title: "Proposal starter",
+      description: "Commercial next-step draft using the same assessment data.",
+      preview: `Scope direction: ${projectTypeLabel}. Current score: ${manualWithAerial}.`,
+      fileName: `${safeName || "jetizon-site"}-proposal-starter.md`,
+      content: proposalStarterDraft,
+    },
+  ];
+
   const formatAssessmentText = (assessment: SavedAssessment) => {
     const lines = [
       "Jetizon Onsite Assessment",
@@ -581,15 +749,11 @@ export default function OnsiteAssistant() {
   };
 
   const handleDownloadAssessment = (assessment: SavedAssessment = currentAssessment) => {
-    const blob = new Blob([formatAssessmentText(assessment)], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    const safeName = assessment.siteName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
-    anchor.href = url;
-    anchor.download = `${safeName || "jetizon-site"}-assessment.txt`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    const savedSafeName = assessment.siteName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    downloadTextFile(
+      `${savedSafeName || "jetizon-site"}-assessment.txt`,
+      formatAssessmentText(assessment),
+    );
   };
 
   return (
@@ -1075,6 +1239,53 @@ export default function OnsiteAssistant() {
           </div>
           {saveMessage && (
             <p className="mt-3 text-xs leading-6 text-lime-300">{saveMessage}</p>
+          )}
+        </div>
+
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+            Auto-fill drafts
+          </p>
+          <p className="mt-3 text-sm leading-7 text-slate-300">
+            Use the current onsite assessment to generate first-draft Jetizon documents
+            without retyping the same site details.
+          </p>
+          <div className="mt-5 space-y-4">
+            {documentDrafts.map((draft) => (
+              <div
+                key={draft.title}
+                className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+              >
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div className="max-w-2xl">
+                    <p className="font-semibold text-white">{draft.title}</p>
+                    <p className="mt-1 text-sm leading-7 text-slate-300">
+                      {draft.description}
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-slate-400">
+                      {draft.preview}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => downloadTextFile(draft.fileName, draft.content)}
+                    className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                  >
+                    Download Draft
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {missingInfo.length > 0 && (
+            <div className="mt-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
+              <p className="font-semibold text-white">Still missing for stronger drafts</p>
+              <ul className="mt-2 space-y-2">
+                {missingInfo.map((item) => (
+                  <li key={item}>- {item}</li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
 
