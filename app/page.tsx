@@ -384,8 +384,8 @@ export default function Page() {
               <p><strong>Phone:</strong> (646) 991-1287</p>
               <p>
                 <strong>Email:</strong>{" "}
-                <a href="mailto:jmbintech@gmail.com" className="text-lime-400 underline">
-                  jmbintech@gmail.com
+                <a href="mailto:andre@jetizonmotorbikeintech.com" className="text-lime-400 underline">
+                  andre@jetizonmotorbikeintech.com
                 </a>
               </p>
               <p><strong>Location:</strong> Ridgewood, New York</p>
@@ -431,7 +431,7 @@ export default function Page() {
               </ul>
             </div>
             <div className="mt-8 space-y-3 text-slate-300">
-              <p><strong>Email:</strong> jmbintech@gmail.com</p>
+              <p><strong>Email:</strong> andre@jetizonmotorbikeintech.com</p>
               <p><strong>Phone:</strong> (646) 991-1287</p>
               <p><strong>Location:</strong> Ridgewood, New York</p>
             </div>
@@ -460,7 +460,7 @@ export default function Page() {
                 Start Pre-Assessment
               </Link>
               <a
-                href="mailto:jmbintech@gmail.com"
+                href="mailto:andre@jetizonmotorbikeintech.com"
                 className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
               >
                 Email Instead

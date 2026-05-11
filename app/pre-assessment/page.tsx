@@ -38,7 +38,7 @@ export default function PreAssessmentPage() {
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
-                  href="mailto:jmbintech@gmail.com"
+                  href="mailto:andre@jetizonmotorbikeintech.com"
                   className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
                 >
                   Email Jetizon Directly
