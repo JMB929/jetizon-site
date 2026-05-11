@@ -204,9 +204,9 @@ export default function Page() {
             </p>
             <div className="mt-6 h-px w-full bg-gradient-to-r from-lime-400/60 via-white/10 to-transparent" />
             <p className="mt-6 text-sm leading-7 text-slate-400">
-              The goal is not to pretend Jetizon already owns a network. The goal
-              is to build a disciplined pathway from host-site screening to
-              practical deployment and long-term operating leverage.
+              Jetizon is building a disciplined pathway from host-site screening
+              to practical deployment, stronger partnerships, and long-term
+              operating leverage.
             </p>
           </div>
         </div>
