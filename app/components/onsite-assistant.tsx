@@ -29,6 +29,12 @@ type SelectedPhoto = {
 
 type TernaryChoice = "yes" | "no" | "unclear";
 type ThirtyCEligibility = "not-started" | "eligible" | "ineligible" | "unclear";
+type FitResult =
+  | "not-started"
+  | "likely-fits"
+  | "may-fit"
+  | "unlikely-fit"
+  | "needs-measurement";
 
 type SavedAssessment = {
   id: string;
@@ -54,6 +60,14 @@ type SavedAssessment = {
   };
   thirtyCReview: {
     status: ThirtyCEligibility;
+    summary: string;
+    notes: string;
+  };
+  fitReview: {
+    stationModel: string;
+    schematicFileName: string;
+    knownMeasurement: string;
+    result: FitResult;
     summary: string;
     notes: string;
   };
@@ -174,6 +188,11 @@ export default function OnsiteAssistant() {
   const [thirtyCEligibility, setThirtyCEligibility] =
     useState<ThirtyCEligibility>("not-started");
   const [thirtyCNotes, setThirtyCNotes] = useState("");
+  const [stationModel, setStationModel] = useState("");
+  const [knownMeasurement, setKnownMeasurement] = useState("");
+  const [fitResult, setFitResult] = useState<FitResult>("not-started");
+  const [fitNotes, setFitNotes] = useState("");
+  const [schematicFileName, setSchematicFileName] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<
     Partial<Record<PhotoFieldKey, SelectedPhoto>>
   >({});
@@ -459,7 +478,17 @@ export default function OnsiteAssistant() {
         ? "Site does not appear to fall within a 30C-eligible census tract based on the locator review."
         : thirtyCEligibility === "unclear"
           ? "30C locator review was attempted, but the result is still unclear."
-          : "30C locator review has not been completed yet.";
+        : "30C locator review has not been completed yet.";
+  const fitSummary =
+    fitResult === "likely-fits"
+      ? "The selected station appears likely to fit the visible install area, subject to field measurement and contractor review."
+      : fitResult === "may-fit"
+        ? "The station may fit, but the layout still shows enough constraints that field measurement is needed."
+        : fitResult === "unlikely-fit"
+          ? "The station appears too large or too constrained for the visible install area."
+          : fitResult === "needs-measurement"
+            ? "The current photos and references are not strong enough to support a reliable fit conclusion without on-site measurement."
+            : "Station fit screening has not been completed yet.";
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -573,6 +602,14 @@ export default function OnsiteAssistant() {
       summary: thirtyCSummary,
       notes: thirtyCNotes.trim(),
     },
+    fitReview: {
+      stationModel: stationModel.trim(),
+      schematicFileName,
+      knownMeasurement: knownMeasurement.trim(),
+      result: fitResult,
+      summary: fitSummary,
+      notes: fitNotes.trim(),
+    },
     onsiteNotes,
     analysis,
   };
@@ -588,6 +625,7 @@ export default function OnsiteAssistant() {
     onsiteNotes.trim() ? null : "Ground-level onsite notes",
     aerialInputsStarted ? null : "Bird's-eye review",
     thirtyCEligibility !== "not-started" ? null : "30C locator review",
+    fitResult !== "not-started" ? null : "Station fit screen",
     analysis ? null : "AI photo screening",
   ].filter(Boolean) as string[];
 
@@ -619,6 +657,14 @@ export default function OnsiteAssistant() {
     `- Status: ${thirtyCEligibility}`,
     `- Summary: ${thirtyCSummary}`,
     `- Notes: ${thirtyCNotes || "None entered"}`,
+    "",
+    "## Station Fit Screen",
+    `- Station model: ${stationModel || "Not entered"}`,
+    `- Uploaded schematic: ${schematicFileName || "Not uploaded"}`,
+    `- Known measurement reference: ${knownMeasurement || "Not entered"}`,
+    `- Fit result: ${fitResult}`,
+    `- Summary: ${fitSummary}`,
+    `- Notes: ${fitNotes || "None entered"}`,
     "",
     "## Ground-Level Review",
     `- Existing parking visible: ${existingParking}`,
@@ -663,6 +709,11 @@ export default function OnsiteAssistant() {
     "## 30C Tax Credit Read",
     `${thirtyCSummary}${thirtyCNotes.trim() ? ` Notes: ${thirtyCNotes.trim()}` : ""}`,
     "",
+    "## Station Fit Read",
+    `${fitSummary}${stationModel.trim() ? ` Model: ${stationModel.trim()}.` : ""}${
+      fitNotes.trim() ? ` Notes: ${fitNotes.trim()}` : ""
+    }`,
+    "",
     "## Next Step",
     nextSteps[0] || "Gather more site information before advancing.",
     "",
@@ -688,6 +739,7 @@ export default function OnsiteAssistant() {
     `- Assessment score: ${manualWithAerial}`,
     `- Bird's-eye review: ${aerialScore || "Not started"} (${aerialSiteContext})`,
     `- 30C locator review: ${thirtyCEligibility}`,
+    `- Station fit result: ${fitResult}`,
     `- Host commitment: ${hostCommitment}`,
     `- Product readiness: ${productReadiness}`,
     "",
@@ -753,6 +805,14 @@ export default function OnsiteAssistant() {
       `- Status: ${assessment.thirtyCReview.status}`,
       `- Summary: ${assessment.thirtyCReview.summary}`,
       `- Notes: ${assessment.thirtyCReview.notes || "None entered"}`,
+      "",
+      "Station Fit Screen:",
+      `- Station model: ${assessment.fitReview.stationModel || "Not entered"}`,
+      `- Uploaded schematic: ${assessment.fitReview.schematicFileName || "Not uploaded"}`,
+      `- Known measurement reference: ${assessment.fitReview.knownMeasurement || "Not entered"}`,
+      `- Fit result: ${assessment.fitReview.result}`,
+      `- Summary: ${assessment.fitReview.summary}`,
+      `- Notes: ${assessment.fitReview.notes || "None entered"}`,
       "",
       "Onsite notes:",
       assessment.onsiteNotes || "None entered",
@@ -1225,6 +1285,102 @@ export default function OnsiteAssistant() {
             </p>
           </div>
 
+          <div className="rounded-[1.75rem] border border-fuchsia-400/20 bg-fuchsia-400/5 p-5 md:col-span-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.25em] text-fuchsia-300">
+                  Station Fit Screen
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Upload a charger cut sheet or schematic and capture an early fit
+                  judgment against the visible install area. This is a product-fit
+                  screen, not a final engineering approval.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Station model</span>
+                <input
+                  value={stationModel}
+                  onChange={(event) => setStationModel(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-fuchsia-300"
+                  placeholder="Wallbox Pulsar Pro 48A"
+                />
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Known measurement reference
+                </span>
+                <input
+                  value={knownMeasurement}
+                  onChange={(event) => setKnownMeasurement(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-fuchsia-300"
+                  placeholder="Parking stripe approx. 9 ft wide"
+                />
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">
+                  Schematic or cut sheet
+                </span>
+                <input
+                  type="file"
+                  accept=".pdf,image/*"
+                  onChange={(event) =>
+                    setSchematicFileName(event.target.files?.[0]?.name || "")
+                  }
+                  className="block w-full rounded-2xl border border-dashed border-white/15 bg-slate-950/60 px-4 py-3 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                />
+                {schematicFileName && (
+                  <p className="mt-2 text-xs leading-6 text-fuchsia-200">
+                    Selected: {schematicFileName}
+                  </p>
+                )}
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Fit result</span>
+                <select
+                  value={fitResult}
+                  onChange={(event) => setFitResult(event.target.value as FitResult)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-fuchsia-300"
+                >
+                  <option value="not-started">Not reviewed yet</option>
+                  <option value="likely-fits">Likely fits</option>
+                  <option value="may-fit">May fit with layout constraints</option>
+                  <option value="unlikely-fit">Unlikely fit</option>
+                  <option value="needs-measurement">Need on-site measurement</option>
+                </select>
+              </label>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 md:col-span-2">
+                <p className="text-sm font-semibold text-white">Fit summary</p>
+                <p className="mt-2 text-sm leading-7 text-slate-300">{fitSummary}</p>
+              </div>
+
+              <label className="text-sm text-slate-300 md:col-span-2">
+                <span className="mb-2 block font-medium text-white">Fit notes</span>
+                <textarea
+                  value={fitNotes}
+                  onChange={(event) => setFitNotes(event.target.value)}
+                  rows={4}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-fuchsia-300"
+                  placeholder="Wallbox profile appears to fit the side wall, but service clearance near the walkway still needs tape measurement..."
+                />
+              </label>
+            </div>
+
+            <p className="mt-4 text-xs leading-6 text-slate-400">
+              Phase 1 stores the charger model, schematic reference, and your fit
+              judgment. A future phase can compare the uploaded schematic against the
+              site photos with AI, but this current step should still be treated as an
+              early screening layer only.
+            </p>
+          </div>
+
           <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-5 md:col-span-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="max-w-2xl">
@@ -1532,6 +1688,19 @@ export default function OnsiteAssistant() {
                   <span className="font-medium text-white">Notes:</span> {onsiteNotes}
                 </p>
               )}
+              {fitResult !== "not-started" && (
+                <>
+                  <p className="mt-2">
+                    <span className="font-medium text-white">Station fit:</span>{" "}
+                    {fitSummary}
+                  </p>
+                  {stationModel && (
+                    <p className="mt-1">
+                      <span className="font-medium text-white">Model:</span> {stationModel}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>
@@ -1557,6 +1726,11 @@ export default function OnsiteAssistant() {
                       <p className="mt-2 text-sm text-slate-300">
                         {assessment.aerialReview.siteContext}
                       </p>
+                      {assessment.fitReview.result !== "not-started" && (
+                        <p className="mt-1 text-sm text-slate-300">
+                          {assessment.fitReview.summary}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <span
