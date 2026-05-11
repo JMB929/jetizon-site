@@ -28,6 +28,7 @@ type SelectedPhoto = {
 };
 
 type TernaryChoice = "yes" | "no" | "unclear";
+type ThirtyCEligibility = "not-started" | "eligible" | "ineligible" | "unclear";
 
 type SavedAssessment = {
   id: string;
@@ -50,6 +51,11 @@ type SavedAssessment = {
     score: TrafficLight | null;
     likelyInstallZone: string;
     summary: string;
+  };
+  thirtyCReview: {
+    status: ThirtyCEligibility;
+    summary: string;
+    notes: string;
   };
   onsiteNotes: string;
   analysis: PhotoAnalysisResult | null;
@@ -165,6 +171,9 @@ export default function OnsiteAssistant() {
   const [layoutRead, setLayoutRead] = useState("unclear");
   const [likelyInstallZone, setLikelyInstallZone] = useState("");
   const [aerialNotes, setAerialNotes] = useState("");
+  const [thirtyCEligibility, setThirtyCEligibility] =
+    useState<ThirtyCEligibility>("not-started");
+  const [thirtyCNotes, setThirtyCNotes] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<
     Partial<Record<PhotoFieldKey, SelectedPhoto>>
   >({});
@@ -441,6 +450,16 @@ export default function OnsiteAssistant() {
   const googleMapUrl = encodedAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
     : "";
+  const thirtyCLocatorUrl =
+    "https://experience.arcgis.com/experience/3f67d5e82dc64d1589714d5499196d4f/page/Page";
+  const thirtyCSummary =
+    thirtyCEligibility === "eligible"
+      ? "Site appears to fall within a 30C-eligible census tract based on the locator review."
+      : thirtyCEligibility === "ineligible"
+        ? "Site does not appear to fall within a 30C-eligible census tract based on the locator review."
+        : thirtyCEligibility === "unclear"
+          ? "30C locator review was attempted, but the result is still unclear."
+          : "30C locator review has not been completed yet.";
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -549,6 +568,11 @@ export default function OnsiteAssistant() {
       likelyInstallZone: likelyInstallZone.trim(),
       summary: aerialSummary,
     },
+    thirtyCReview: {
+      status: thirtyCEligibility,
+      summary: thirtyCSummary,
+      notes: thirtyCNotes.trim(),
+    },
     onsiteNotes,
     analysis,
   };
@@ -563,6 +587,7 @@ export default function OnsiteAssistant() {
     likelyInstallZone.trim() ? null : "Likely install zone",
     onsiteNotes.trim() ? null : "Ground-level onsite notes",
     aerialInputsStarted ? null : "Bird's-eye review",
+    thirtyCEligibility !== "not-started" ? null : "30C locator review",
     analysis ? null : "AI photo screening",
   ].filter(Boolean) as string[];
 
@@ -589,6 +614,11 @@ export default function OnsiteAssistant() {
     `- Bird's-eye score: ${aerialScore || "Not started"}`,
     `- Likely install zone: ${likelyInstallZone || "Not entered"}`,
     `- Summary: ${aerialSummary}`,
+    "",
+    "## 30C Tax Credit Locator Review",
+    `- Status: ${thirtyCEligibility}`,
+    `- Summary: ${thirtyCSummary}`,
+    `- Notes: ${thirtyCNotes || "None entered"}`,
     "",
     "## Ground-Level Review",
     `- Existing parking visible: ${existingParking}`,
@@ -630,6 +660,9 @@ export default function OnsiteAssistant() {
     "## Bird's-Eye Summary",
     aerialSummary,
     "",
+    "## 30C Tax Credit Read",
+    `${thirtyCSummary}${thirtyCNotes.trim() ? ` Notes: ${thirtyCNotes.trim()}` : ""}`,
+    "",
     "## Next Step",
     nextSteps[0] || "Gather more site information before advancing.",
     "",
@@ -654,6 +687,7 @@ export default function OnsiteAssistant() {
     "## Current Site Signals",
     `- Assessment score: ${manualWithAerial}`,
     `- Bird's-eye review: ${aerialScore || "Not started"} (${aerialSiteContext})`,
+    `- 30C locator review: ${thirtyCEligibility}`,
     `- Host commitment: ${hostCommitment}`,
     `- Product readiness: ${productReadiness}`,
     "",
@@ -714,6 +748,11 @@ export default function OnsiteAssistant() {
       `- Bird's-eye score: ${assessment.aerialReview.score || "Not scored"}`,
       `- Likely install zone: ${assessment.aerialReview.likelyInstallZone || "Not entered"}`,
       `- Summary: ${assessment.aerialReview.summary}`,
+      "",
+      "30C Tax Credit Locator Review:",
+      `- Status: ${assessment.thirtyCReview.status}`,
+      `- Summary: ${assessment.thirtyCReview.summary}`,
+      `- Notes: ${assessment.thirtyCReview.notes || "None entered"}`,
       "",
       "Onsite notes:",
       assessment.onsiteNotes || "None entered",
@@ -1120,6 +1159,70 @@ export default function OnsiteAssistant() {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-sky-400/20 bg-sky-400/5 p-5 md:col-span-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.25em] text-sky-300">
+                  30C Tax Credit Locator
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Use the federal ArcGIS locator to check whether the site appears to
+                  fall within a census tract that may qualify for the Alternative Fuel
+                  Vehicle Refueling Property Credit under Section 30C. This is an early
+                  screening layer, not tax advice or a final IRS determination.
+                </p>
+              </div>
+              <a
+                href={thirtyCLocatorUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-2xl bg-sky-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+              >
+                Open 30C Locator
+              </a>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">30C locator result</span>
+                <select
+                  value={thirtyCEligibility}
+                  onChange={(event) =>
+                    setThirtyCEligibility(event.target.value as ThirtyCEligibility)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-sky-300"
+                >
+                  <option value="not-started">Not reviewed yet</option>
+                  <option value="eligible">Appears eligible</option>
+                  <option value="ineligible">Does not appear eligible</option>
+                  <option value="unclear">Unclear / needs follow-up</option>
+                </select>
+              </label>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-sm font-semibold text-white">30C summary</p>
+                <p className="mt-2 text-sm leading-7 text-slate-300">{thirtyCSummary}</p>
+              </div>
+
+              <label className="text-sm text-slate-300 md:col-span-2">
+                <span className="mb-2 block font-medium text-white">30C notes</span>
+                <textarea
+                  value={thirtyCNotes}
+                  onChange={(event) => setThirtyCNotes(event.target.value)}
+                  rows={4}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-sky-300"
+                  placeholder="Eligible tract confirmed in the locator, screenshot captured, or result remained unclear near tract boundary..."
+                />
+              </label>
+            </div>
+
+            <p className="mt-4 text-xs leading-6 text-slate-400">
+              The DOE / ArcGIS 30C locator is useful for screening, but it is not formal
+              IRS guidance. Final tax-credit eligibility still depends on the applicable
+              IRS rules and the taxpayer&apos;s actual situation.
+            </p>
           </div>
 
           <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-5 md:col-span-2">
