@@ -35,6 +35,71 @@ type FitResult =
   | "may-fit"
   | "unlikely-fit"
   | "needs-measurement";
+type WorkflowStage =
+  | "lead"
+  | "pre-assessment-started"
+  | "waiting-on-owner"
+  | "waiting-on-photos-docs"
+  | "pre-assessment-complete"
+  | "partner-review"
+  | "fdny-review-needed"
+  | "dob-review-needed"
+  | "ready-to-submit"
+  | "submitted"
+  | "waiting-on-agency"
+  | "approved"
+  | "stopped-archived";
+type AgencyStatus =
+  | "not-needed"
+  | "not-started"
+  | "in-progress"
+  | "submitted"
+  | "waiting-on-confirmation"
+  | "confirmed";
+
+type WorkflowChecklist = {
+  ownerDecisionMakerConfirmed: boolean;
+  photosAndDocsReceived: boolean;
+  proposalAccepted: boolean;
+  vendorOrPartnerSelected: boolean;
+  requiredDocsReady: boolean;
+};
+
+type WorkflowTracking = {
+  stage: WorkflowStage;
+  checklist: WorkflowChecklist;
+  fdnyStatus: AgencyStatus;
+  dobStatus: AgencyStatus;
+  dotStatus: AgencyStatus;
+  nextFollowUpDate: string;
+  notes: string;
+};
+
+type SavedAssessmentFormState = {
+  hostType: string;
+  projectType: string;
+  locationType: string;
+  hostCommitment: string;
+  productReadiness: string;
+  complexity: string;
+  existingParking: string;
+  onsiteNotes: string;
+  mapSource: string;
+  parkingLotVisible: TernaryChoice;
+  installZoneVisible: TernaryChoice;
+  publicSpaceExposure: TernaryChoice;
+  drivewayAccessVisible: TernaryChoice;
+  layoutRead: string;
+  likelyInstallZone: string;
+  aerialNotes: string;
+  thirtyCEligibility: ThirtyCEligibility;
+  thirtyCNotes: string;
+  stationModel: string;
+  knownMeasurement: string;
+  fitResult: FitResult;
+  fitNotes: string;
+  schematicFileName: string;
+};
 
 type SavedAssessment = {
   id: string;
@@ -73,6 +138,8 @@ type SavedAssessment = {
   };
   onsiteNotes: string;
   analysis: PhotoAnalysisResult | null;
+  workflow: WorkflowTracking;
+  formState: SavedAssessmentFormState;
 };
 
 const STORAGE_KEY = "jetizon-onsite-assessments";
@@ -140,6 +207,35 @@ function ternaryLabel(value: TernaryChoice) {
   return "Unclear";
 }
 
+function workflowStageLabel(value: WorkflowStage) {
+  return {
+    lead: "Lead",
+    "pre-assessment-started": "Pre-assessment started",
+    "waiting-on-owner": "Waiting on owner info",
+    "waiting-on-photos-docs": "Waiting on photos/docs",
+    "pre-assessment-complete": "Pre-assessment complete",
+    "partner-review": "Partner review",
+    "fdny-review-needed": "FDNY review needed",
+    "dob-review-needed": "DOB review needed",
+    "ready-to-submit": "Ready to submit",
+    submitted: "Submitted",
+    "waiting-on-agency": "Waiting on agency confirmation",
+    approved: "Approved",
+    "stopped-archived": "Stopped / archived",
+  }[value];
+}
+
+function agencyStatusLabel(value: AgencyStatus) {
+  return {
+    "not-needed": "Not needed",
+    "not-started": "Not started",
+    "in-progress": "In progress",
+    submitted: "Submitted",
+    "waiting-on-confirmation": "Waiting on confirmation",
+    confirmed: "Confirmed",
+  }[value];
+}
+
 function downloadTextFile(fileName: string, content: string) {
   const blob = new Blob([content], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
@@ -167,6 +263,7 @@ async function fileToDataUrl(file: File) {
 }
 
 export default function OnsiteAssistant() {
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [siteName, setSiteName] = useState("");
   const [siteAddress, setSiteAddress] = useState("");
   const [hostType, setHostType] = useState("multifamily");
@@ -193,6 +290,17 @@ export default function OnsiteAssistant() {
   const [fitResult, setFitResult] = useState<FitResult>("not-started");
   const [fitNotes, setFitNotes] = useState("");
   const [schematicFileName, setSchematicFileName] = useState("");
+  const [workflowStage, setWorkflowStage] = useState<WorkflowStage>("lead");
+  const [ownerDecisionMakerConfirmed, setOwnerDecisionMakerConfirmed] = useState(false);
+  const [photosAndDocsReceived, setPhotosAndDocsReceived] = useState(false);
+  const [proposalAccepted, setProposalAccepted] = useState(false);
+  const [vendorOrPartnerSelected, setVendorOrPartnerSelected] = useState(false);
+  const [requiredDocsReady, setRequiredDocsReady] = useState(false);
+  const [fdnyStatus, setFdnyStatus] = useState<AgencyStatus>("not-needed");
+  const [dobStatus, setDobStatus] = useState<AgencyStatus>("not-started");
+  const [dotStatus, setDotStatus] = useState<AgencyStatus>("not-needed");
+  const [nextFollowUpDate, setNextFollowUpDate] = useState("");
+  const [workflowNotes, setWorkflowNotes] = useState("");
   const [selectedPhotos, setSelectedPhotos] = useState<
     Partial<Record<PhotoFieldKey, SelectedPhoto>>
   >({});
@@ -490,6 +598,30 @@ export default function OnsiteAssistant() {
             ? "The current photos and references are not strong enough to support a reliable fit conclusion without on-site measurement."
             : "Station fit screening has not been completed yet.";
 
+  const workflowChecklistMissing = [
+    ownerDecisionMakerConfirmed ? null : "Owner or decision-maker confirmation",
+    photosAndDocsReceived ? null : "Photos and supporting documents received",
+    aerialReviewStatus === "Completed" ? null : "Completed bird's-eye review",
+    thirtyCEligibility !== "not-started" ? null : "30C review completed",
+    fitResult !== "not-started" ? null : "Station fit screen completed",
+    proposalAccepted ? null : "Proposal or scope acceptance",
+    vendorOrPartnerSelected ? null : "Vendor or partner selected",
+    requiredDocsReady ? null : "Required submission documents ready",
+  ].filter(Boolean) as string[];
+
+  const readyToSubmit =
+    workflowChecklistMissing.length === 0 &&
+    (fdnyStatus === "not-needed" || fdnyStatus === "in-progress") &&
+    (dobStatus === "in-progress" || dobStatus === "not-needed") &&
+    (dotStatus === "not-needed" || dotStatus === "in-progress");
+
+  const workflowSummary =
+    readyToSubmit
+      ? "Project appears ready to move into submission or formal agency coordination."
+      : workflowChecklistMissing.length > 0
+        ? `Project is not ready to submit yet. Missing: ${workflowChecklistMissing.join(", ")}.`
+        : "Project is in motion, but agency or owner-side follow-up is still needed before submission.";
+
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
 
@@ -580,7 +712,7 @@ export default function OnsiteAssistant() {
   };
 
   const currentAssessment: SavedAssessment = {
-    id: `${Date.now()}`,
+    id: currentProjectId || `${Date.now()}`,
     savedAt: new Date().toISOString(),
     siteName: siteName || "Unnamed site",
     siteAddress: siteAddress || "Address not entered",
@@ -612,6 +744,46 @@ export default function OnsiteAssistant() {
     },
     onsiteNotes,
     analysis,
+    workflow: {
+      stage: workflowStage,
+      checklist: {
+        ownerDecisionMakerConfirmed,
+        photosAndDocsReceived,
+        proposalAccepted,
+        vendorOrPartnerSelected,
+        requiredDocsReady,
+      },
+      fdnyStatus,
+      dobStatus,
+      dotStatus,
+      nextFollowUpDate,
+      notes: workflowNotes.trim(),
+    },
+    formState: {
+      hostType,
+      projectType,
+      locationType,
+      hostCommitment,
+      productReadiness,
+      complexity,
+      existingParking,
+      onsiteNotes,
+      mapSource,
+      parkingLotVisible,
+      installZoneVisible,
+      publicSpaceExposure,
+      drivewayAccessVisible,
+      layoutRead,
+      likelyInstallZone,
+      aerialNotes,
+      thirtyCEligibility,
+      thirtyCNotes,
+      stationModel,
+      knownMeasurement,
+      fitResult,
+      fitNotes,
+      schematicFileName,
+    },
   };
 
   const hostTypeLabel = HOST_TYPE_LABELS[hostType] || hostType;
@@ -679,8 +851,22 @@ export default function OnsiteAssistant() {
     `- Complexity read: ${complexity}`,
     `- Likely agency path: DOB ${agencies.dob}, FDNY ${agencies.fdny}, DOT ${agencies.dot}`,
     "",
+    "## Workflow Tracking",
+    `- Current stage: ${workflowStageLabel(workflowStage)}`,
+    `- Ready-to-submit read: ${readyToSubmit ? "Yes" : "No"}`,
+    `- Workflow summary: ${workflowSummary}`,
+    `- FDNY tracking: ${agencyStatusLabel(fdnyStatus)}`,
+    `- DOB tracking: ${agencyStatusLabel(dobStatus)}`,
+    `- DOT tracking: ${agencyStatusLabel(dotStatus)}`,
+    `- Next follow-up: ${nextFollowUpDate || "Not entered"}`,
+    `- Workflow notes: ${workflowNotes || "None entered"}`,
+    "",
     "## Missing Information",
-    ...(missingInfo.length ? missingInfo.map((item) => `- ${item}`) : ["- No major missing inputs flagged from the current form state."]),
+    ...(
+      [...missingInfo, ...workflowChecklistMissing].length
+        ? [...missingInfo, ...workflowChecklistMissing].map((item) => `- ${item}`)
+        : ["- No major missing inputs flagged from the current form state."]
+    ),
     "",
     "## Recommended Next Step",
     ...nextSteps.map((step) => `- ${step}`),
@@ -717,6 +903,9 @@ export default function OnsiteAssistant() {
     "## Next Step",
     nextSteps[0] || "Gather more site information before advancing.",
     "",
+    "## Workflow Read",
+    `${workflowSummary} Current stage: ${workflowStageLabel(workflowStage)}.`,
+    "",
     "## Important Note",
     "This is an early Jetizon screening summary. It is not final engineering, permit approval, or a locked installation quote.",
   ].join("\n");
@@ -740,6 +929,7 @@ export default function OnsiteAssistant() {
     `- Bird's-eye review: ${aerialScore || "Not started"} (${aerialSiteContext})`,
     `- 30C locator review: ${thirtyCEligibility}`,
     `- Station fit result: ${fitResult}`,
+    `- Workflow stage: ${workflowStageLabel(workflowStage)}`,
     `- Host commitment: ${hostCommitment}`,
     `- Product readiness: ${productReadiness}`,
     "",
@@ -814,6 +1004,19 @@ export default function OnsiteAssistant() {
       `- Summary: ${assessment.fitReview.summary}`,
       `- Notes: ${assessment.fitReview.notes || "None entered"}`,
       "",
+      "Workflow Tracking:",
+      `- Stage: ${workflowStageLabel(assessment.workflow?.stage || "lead")}`,
+      `- Owner / decision-maker confirmed: ${assessment.workflow?.checklist.ownerDecisionMakerConfirmed ? "Yes" : "No"}`,
+      `- Photos and docs received: ${assessment.workflow?.checklist.photosAndDocsReceived ? "Yes" : "No"}`,
+      `- Proposal accepted: ${assessment.workflow?.checklist.proposalAccepted ? "Yes" : "No"}`,
+      `- Vendor or partner selected: ${assessment.workflow?.checklist.vendorOrPartnerSelected ? "Yes" : "No"}`,
+      `- Required docs ready: ${assessment.workflow?.checklist.requiredDocsReady ? "Yes" : "No"}`,
+      `- FDNY tracking: ${agencyStatusLabel(assessment.workflow?.fdnyStatus || "not-needed")}`,
+      `- DOB tracking: ${agencyStatusLabel(assessment.workflow?.dobStatus || "not-started")}`,
+      `- DOT tracking: ${agencyStatusLabel(assessment.workflow?.dotStatus || "not-needed")}`,
+      `- Next follow-up: ${assessment.workflow?.nextFollowUpDate || "Not entered"}`,
+      `- Workflow notes: ${assessment.workflow?.notes || "None entered"}`,
+      "",
       "Onsite notes:",
       assessment.onsiteNotes || "None entered",
     ];
@@ -840,10 +1043,26 @@ export default function OnsiteAssistant() {
   };
 
   const handleSaveAssessment = () => {
-    const next = [currentAssessment, ...savedAssessments].slice(0, 12);
+    const existingIndex = savedAssessments.findIndex(
+      (assessment) => assessment.id === currentAssessment.id,
+    );
+    const next =
+      existingIndex >= 0
+        ? [
+            currentAssessment,
+            ...savedAssessments.filter(
+              (assessment) => assessment.id !== currentAssessment.id,
+            ),
+          ].slice(0, 12)
+        : [currentAssessment, ...savedAssessments].slice(0, 12);
     setSavedAssessments(next);
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setSaveMessage("Assessment saved in this browser.");
+    setCurrentProjectId(currentAssessment.id);
+    setSaveMessage(
+      existingIndex >= 0
+        ? "Project updated in this browser."
+        : "Project saved in this browser.",
+    );
     window.setTimeout(() => setSaveMessage(""), 2200);
   };
 
@@ -853,6 +1072,65 @@ export default function OnsiteAssistant() {
       `${savedSafeName || "jetizon-site"}-assessment.txt`,
       formatAssessmentText(assessment),
     );
+  };
+
+  const handleLoadAssessment = (assessment: SavedAssessment) => {
+    setCurrentProjectId(assessment.id);
+    setSiteName(assessment.siteName);
+    setSiteAddress(assessment.siteAddress);
+    setHostType(assessment.formState?.hostType || "multifamily");
+    setProjectType(assessment.formState?.projectType || "secure-bike-parking");
+    setLocationType(assessment.formState?.locationType || "private");
+    setHostCommitment(assessment.formState?.hostCommitment || "strong");
+    setProductReadiness(assessment.formState?.productReadiness || "known");
+    setComplexity(assessment.formState?.complexity || "low");
+    setExistingParking(assessment.formState?.existingParking || "yes");
+    setOnsiteNotes(assessment.formState?.onsiteNotes || assessment.onsiteNotes || "");
+    setMapSource(assessment.formState?.mapSource || assessment.aerialReview.mapSource || "google-satellite");
+    setParkingLotVisible(assessment.formState?.parkingLotVisible || "unclear");
+    setInstallZoneVisible(assessment.formState?.installZoneVisible || "unclear");
+    setPublicSpaceExposure(assessment.formState?.publicSpaceExposure || "unclear");
+    setDrivewayAccessVisible(assessment.formState?.drivewayAccessVisible || "unclear");
+    setLayoutRead(assessment.formState?.layoutRead || "unclear");
+    setLikelyInstallZone(
+      assessment.formState?.likelyInstallZone || assessment.aerialReview.likelyInstallZone || "",
+    );
+    setAerialNotes(assessment.formState?.aerialNotes || "");
+    setThirtyCEligibility(
+      assessment.formState?.thirtyCEligibility || assessment.thirtyCReview.status,
+    );
+    setThirtyCNotes(assessment.formState?.thirtyCNotes || assessment.thirtyCReview.notes || "");
+    setStationModel(assessment.formState?.stationModel || assessment.fitReview.stationModel || "");
+    setKnownMeasurement(
+      assessment.formState?.knownMeasurement || assessment.fitReview.knownMeasurement || "",
+    );
+    setFitResult(assessment.formState?.fitResult || assessment.fitReview.result);
+    setFitNotes(assessment.formState?.fitNotes || assessment.fitReview.notes || "");
+    setSchematicFileName(
+      assessment.formState?.schematicFileName || assessment.fitReview.schematicFileName || "",
+    );
+    setWorkflowStage(assessment.workflow?.stage || "lead");
+    setOwnerDecisionMakerConfirmed(
+      assessment.workflow?.checklist.ownerDecisionMakerConfirmed || false,
+    );
+    setPhotosAndDocsReceived(
+      assessment.workflow?.checklist.photosAndDocsReceived || false,
+    );
+    setProposalAccepted(assessment.workflow?.checklist.proposalAccepted || false);
+    setVendorOrPartnerSelected(
+      assessment.workflow?.checklist.vendorOrPartnerSelected || false,
+    );
+    setRequiredDocsReady(assessment.workflow?.checklist.requiredDocsReady || false);
+    setFdnyStatus(assessment.workflow?.fdnyStatus || "not-needed");
+    setDobStatus(assessment.workflow?.dobStatus || "not-started");
+    setDotStatus(assessment.workflow?.dotStatus || "not-needed");
+    setNextFollowUpDate(assessment.workflow?.nextFollowUpDate || "");
+    setWorkflowNotes(assessment.workflow?.notes || "");
+    setAnalysis(assessment.analysis || null);
+    setAnalysisError("");
+    setSelectedPhotos({});
+    setSaveMessage(`Loaded ${assessment.siteName} back into the assistant.`);
+    window.setTimeout(() => setSaveMessage(""), 2200);
   };
 
   return (
@@ -1381,6 +1659,199 @@ export default function OnsiteAssistant() {
             </p>
           </div>
 
+          <div className="rounded-[1.75rem] border border-amber-400/20 bg-amber-400/5 p-5 md:col-span-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.25em] text-amber-300">
+                  Project Workflow Tracker
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Use this block to keep one site moving through Jetizon&apos;s process
+                  instead of treating the assessment like a one-time form. Reopen the
+                  same site later, update the checklist, and move it toward submission
+                  or agency follow-up.
+                </p>
+              </div>
+              {currentProjectId && (
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-xs uppercase tracking-[0.22em] text-amber-200">
+                  Active project loaded
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Current stage</span>
+                <select
+                  value={workflowStage}
+                  onChange={(event) =>
+                    setWorkflowStage(event.target.value as WorkflowStage)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                >
+                  <option value="lead">Lead</option>
+                  <option value="pre-assessment-started">Pre-assessment started</option>
+                  <option value="waiting-on-owner">Waiting on owner info</option>
+                  <option value="waiting-on-photos-docs">Waiting on photos/docs</option>
+                  <option value="pre-assessment-complete">Pre-assessment complete</option>
+                  <option value="partner-review">Partner review</option>
+                  <option value="fdny-review-needed">FDNY review needed</option>
+                  <option value="dob-review-needed">DOB review needed</option>
+                  <option value="ready-to-submit">Ready to submit</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="waiting-on-agency">Waiting on agency confirmation</option>
+                  <option value="approved">Approved</option>
+                  <option value="stopped-archived">Stopped / archived</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">Next follow-up</span>
+                <input
+                  type="date"
+                  value={nextFollowUpDate}
+                  onChange={(event) => setNextFollowUpDate(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {[
+                {
+                  label: "Owner / decision-maker confirmed",
+                  checked: ownerDecisionMakerConfirmed,
+                  onChange: setOwnerDecisionMakerConfirmed,
+                },
+                {
+                  label: "Photos and docs received",
+                  checked: photosAndDocsReceived,
+                  onChange: setPhotosAndDocsReceived,
+                },
+                {
+                  label: "Proposal / scope accepted",
+                  checked: proposalAccepted,
+                  onChange: setProposalAccepted,
+                },
+                {
+                  label: "Vendor or partner selected",
+                  checked: vendorOrPartnerSelected,
+                  onChange: setVendorOrPartnerSelected,
+                },
+                {
+                  label: "Required submission docs ready",
+                  checked: requiredDocsReady,
+                  onChange: setRequiredDocsReady,
+                },
+              ].map((item) => (
+                <label
+                  key={item.label}
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-200"
+                >
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={(event) => item.onChange(event.target.checked)}
+                    className="h-4 w-4 rounded border-white/20 bg-slate-950/60 text-amber-300 focus:ring-amber-300"
+                  />
+                  <span>{item.label}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">FDNY tracking</span>
+                <select
+                  value={fdnyStatus}
+                  onChange={(event) => setFdnyStatus(event.target.value as AgencyStatus)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                >
+                  <option value="not-needed">Not needed</option>
+                  <option value="not-started">Not started</option>
+                  <option value="in-progress">In progress</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="waiting-on-confirmation">Waiting on confirmation</option>
+                  <option value="confirmed">Confirmed</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">DOB tracking</span>
+                <select
+                  value={dobStatus}
+                  onChange={(event) => setDobStatus(event.target.value as AgencyStatus)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                >
+                  <option value="not-needed">Not needed</option>
+                  <option value="not-started">Not started</option>
+                  <option value="in-progress">In progress</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="waiting-on-confirmation">Waiting on confirmation</option>
+                  <option value="confirmed">Confirmed</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300">
+                <span className="mb-2 block font-medium text-white">DOT tracking</span>
+                <select
+                  value={dotStatus}
+                  onChange={(event) => setDotStatus(event.target.value as AgencyStatus)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                >
+                  <option value="not-needed">Not needed</option>
+                  <option value="not-started">Not started</option>
+                  <option value="in-progress">In progress</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="waiting-on-confirmation">Waiting on confirmation</option>
+                  <option value="confirmed">Confirmed</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-slate-300 md:col-span-3">
+                <span className="mb-2 block font-medium text-white">Workflow notes</span>
+                <textarea
+                  value={workflowNotes}
+                  onChange={(event) => setWorkflowNotes(event.target.value)}
+                  rows={4}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+                  placeholder="Waiting on property manager signature, FDNY path identified, electrician selected, or follow-up timing..."
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div
+                className={`rounded-2xl border p-4 ${
+                  readyToSubmit
+                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-100"
+                    : "border-amber-400/25 bg-amber-400/10 text-amber-100"
+                }`}
+              >
+                <p className="text-sm font-semibold text-white">Readiness</p>
+                <p className="mt-2 text-sm leading-7">{workflowSummary}</p>
+                <p className="mt-3 text-xs uppercase tracking-[0.22em] text-white/80">
+                  Stage: {workflowStageLabel(workflowStage)}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-sm font-semibold text-white">Still missing</p>
+                {workflowChecklistMissing.length > 0 ? (
+                  <ul className="mt-2 space-y-2 text-sm leading-7 text-slate-300">
+                    {workflowChecklistMissing.map((item) => (
+                      <li key={item}>- {item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm leading-7 text-slate-300">
+                    No major workflow blockers are currently flagged.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-5 md:col-span-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="max-w-2xl">
@@ -1663,6 +2134,11 @@ export default function OnsiteAssistant() {
           {(siteName || siteAddress || onsiteNotes) && (
             <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm text-slate-300">
               <p className="font-semibold text-white">Current site snapshot</p>
+              {currentProjectId && (
+                <p className="mt-2 text-xs uppercase tracking-[0.22em] text-amber-300">
+                  Working on saved project
+                </p>
+              )}
               <p className="mt-2">
                 <span className="font-medium text-white">Site:</span>{" "}
                 {siteName || "Not entered"}
@@ -1701,6 +2177,14 @@ export default function OnsiteAssistant() {
                   )}
                 </>
               )}
+              <p className="mt-2">
+                <span className="font-medium text-white">Workflow stage:</span>{" "}
+                {workflowStageLabel(workflowStage)}
+              </p>
+              <p className="mt-1">
+                <span className="font-medium text-white">Readiness:</span>{" "}
+                {workflowSummary}
+              </p>
             </div>
           )}
         </div>
@@ -1722,6 +2206,9 @@ export default function OnsiteAssistant() {
                       <p className="mt-1 text-sm text-slate-300">{assessment.siteAddress}</p>
                       <p className="mt-2 text-xs uppercase tracking-[0.22em] text-lime-300">
                         Saved {new Date(assessment.savedAt).toLocaleString()}
+                      </p>
+                      <p className="mt-2 text-xs uppercase tracking-[0.22em] text-amber-300">
+                        {workflowStageLabel(assessment.workflow?.stage || "lead")}
                       </p>
                       <p className="mt-2 text-sm text-slate-300">
                         {assessment.aerialReview.siteContext}
@@ -1745,6 +2232,13 @@ export default function OnsiteAssistant() {
                         {assessment.overall}
                         {assessment.visualScore ? ` / ${assessment.visualScore}` : ""}
                       </span>
+                      <button
+                        type="button"
+                        onClick={() => handleLoadAssessment(assessment)}
+                        className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-300/20"
+                      >
+                        Load
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleDownloadAssessment(assessment)}
