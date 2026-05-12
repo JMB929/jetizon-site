@@ -1,8 +1,8 @@
 import Link from "next/link";
-import PreAssessmentForm from "../components/pre-assessment-form";
-import LanguageSwitcher from "../components/language-switcher";
+import PreAssessmentForm from "../../components/pre-assessment-form";
+import LanguageSwitcher from "../../components/language-switcher";
 
-export default function PreAssessmentPage() {
+export default function SpanishPreAssessmentPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <section className="relative overflow-hidden border-b border-white/10">
@@ -12,20 +12,20 @@ export default function PreAssessmentPage() {
             <div className="flex items-center gap-3">
               <span className="inline-flex h-3 w-3 rounded-full bg-lime-400 shadow-[0_0_18px_rgba(132,225,0,0.7)]" />
               <p className="text-xs font-medium uppercase tracking-[0.3em] text-slate-300">
-                Jetizon Intake Flow
+                Flujo de evaluacion de Jetizon
               </p>
             </div>
             <div className="flex items-center gap-3">
               <LanguageSwitcher
-                current="en"
+                current="es"
                 enHref="/pre-assessment"
                 esHref="/es/pre-evaluacion"
               />
               <Link
-                href="/"
+                href="/es"
                 className="text-xs font-medium uppercase tracking-[0.24em] text-slate-300 transition hover:text-lime-300"
               >
-                Back to Homepage
+                Volver al inicio
               </Link>
             </div>
           </div>
@@ -33,66 +33,66 @@ export default function PreAssessmentPage() {
           <div className="mt-10 grid gap-10 lg:grid-cols-[1.1fr,0.9fr] lg:items-start">
             <div className="max-w-4xl">
               <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
-                Jetizon Pre-Assessment
+                Pre-evaluacion de Jetizon
               </p>
               <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
-                Send site details, photos, and documents before a deeper charging review.
+                Envie detalles del sitio, fotos y documentos antes de una revision mas profunda.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300 md:text-xl">
-                This intake is for property owners, managers, and host businesses
-                exploring Level 2 or micromobility charging. Share the basics now
-                and Jetizon can screen whether the site looks worth taking toward a
-                contractor, partner, utility, or co-host discussion.
+                Este formulario es para propietarios, administradores y anfitriones que
+                estan explorando carga Nivel 2 o carga para micromovilidad. Comparta lo
+                basico ahora y Jetizon puede evaluar si el sitio merece avanzar hacia una
+                conversacion con contratista, aliado, utility o coanfitrion.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
                   href="mailto:andre@jetizonmotorbikeintech.com"
                   className="rounded-2xl bg-lime-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
                 >
-                  Email Jetizon Directly
+                  Enviar correo a Jetizon
                 </a>
                 <Link
-                  href="/#contact"
+                  href="/es#contact"
                   className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                 >
-                  View Homepage Overview
+                  Ver resumen del sitio
                 </Link>
               </div>
             </div>
 
             <div className="rounded-[2rem] border border-lime-400/20 bg-black/25 p-7 shadow-2xl backdrop-blur">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-300">
-                Before A Full Technical Step
+                Antes del paso tecnico completo
               </p>
               <h2 className="mt-3 text-2xl font-semibold">
-                Jetizon uses this page to separate credible sites from weak ones.
+                Jetizon usa esta pagina para separar sitios creibles de sitios debiles.
               </h2>
               <div className="mt-6 grid gap-4">
                 <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4">
                   <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
-                    Current Use
+                    Uso actual
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    Early site screening before contractor pricing, utility document
-                    gathering, or partner review.
+                    Evaluacion temprana antes de precios de contratista, recopilacion de
+                    documentos de utilidad o revision con aliados.
                   </p>
                 </div>
                 <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4">
                   <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
-                    Typical Output
+                    Resultado tipico
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    Clearer next step, likely project path, and an early read on
-                    whether the opportunity looks simple, conditional, or too complex.
+                    Siguiente paso mas claro, camino probable del proyecto y una lectura
+                    temprana sobre si la oportunidad parece simple, condicionada o demasiado compleja.
                   </p>
                 </div>
                 <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4">
                   <p className="text-xs uppercase tracking-[0.22em] text-lime-300">
-                    Best Early Signal
+                    Mejor senal inicial
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    A host that can share site control, parking context, and usable
-                    photos on the first pass.
+                    Un anfitrion que puede compartir control del sitio, contexto del
+                    estacionamiento y fotos utiles desde la primera revision.
                   </p>
                 </div>
               </div>
@@ -104,15 +104,17 @@ export default function PreAssessmentPage() {
       <section className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">Intake Packet</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400">
+              Paquete inicial
+            </p>
             <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-              Give enough signal to decide whether the site should move forward.
+              Comparta suficiente informacion para decidir si el sitio debe avanzar.
             </h2>
           </div>
           <p className="max-w-xl text-sm leading-7 text-slate-400">
-            The goal is not a final engineering package. It is enough context to
-            screen the opportunity, spot obvious issues, and decide whether deeper
-            review is justified.
+            La meta no es un paquete final de ingenieria. Es suficiente contexto para
+            evaluar la oportunidad, detectar problemas obvios y decidir si vale la pena
+            una revision mas profunda.
           </p>
         </div>
 
@@ -120,52 +122,23 @@ export default function PreAssessmentPage() {
           <div className="space-y-6">
             <div className="rounded-[1.75rem] border border-lime-400/20 bg-lime-400/5 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
-                What To Upload
+                Que subir
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
-                <li>Parking area, garage, curbside, or loading-zone photos</li>
-                <li>Electrical panel, meter room, or service access photos</li>
-                <li>Utility letters, site plans, or sketches if you already have them</li>
+                <li>Fotos del estacionamiento, garaje, borde o zona de carga</li>
+                <li>Fotos del panel electrico, cuarto de medidores o acceso de servicio</li>
+                <li>Cartas de utilidad, planos o croquis si ya existen</li>
               </ul>
             </div>
 
             <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
-                Best Fit For
+                Mejor encaje
               </p>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
-                <li>Multifamily or mixed-use properties with parking</li>
-                <li>Hotels, garages, lots, and neighborhood host sites</li>
-                <li>Businesses exploring tenant, guest, or micromobility charging</li>
-              </ul>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
-                What Happens Next
-              </p>
-              <ol className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
-                <li>Jetizon reviews the site details, photos, and supporting files.</li>
-                <li>
-                  The property is screened for basic fit, likely charging path, and
-                  obvious electrical or layout constraints.
-                </li>
-                <li>
-                  If the site looks promising, Jetizon follows up about the next technical
-                  step, which may include contractor review, utility document gathering, or
-                  incentive screening.
-                </li>
-              </ol>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-white/10 bg-black/25 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
-                Submission Should Answer
-              </p>
-              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-300">
-                <li>Who controls the property or host decision</li>
-                <li>What charging outcome the site is actually exploring</li>
-                <li>Whether there is enough visibility to justify the next step</li>
+                <li>Propiedades multifamiliares o de uso mixto con estacionamiento</li>
+                <li>Hoteles, garajes, lotes y sitios anfitriones de barrio</li>
+                <li>Negocios explorando carga para inquilinos, huespedes o micromovilidad</li>
               </ul>
             </div>
           </div>
@@ -175,20 +148,24 @@ export default function PreAssessmentPage() {
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="max-w-2xl">
                   <p className="text-sm font-semibold uppercase tracking-[0.25em] text-lime-400">
-                    Form Summary
+                    Resumen del formulario
                   </p>
                   <p className="mt-3 text-sm leading-7 text-slate-300">
-                    This form captures the site basics, photos, host role, and charging
-                    objective needed for a practical first-pass review.
+                    Este formulario captura lo basico del sitio, fotos, rol del anfitrion
+                    y objetivo de carga necesarios para una revision practica de primera pasada.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-lime-400/20 bg-lime-400/5 px-4 py-3 text-xs font-medium uppercase tracking-[0.22em] text-lime-300">
-                  Internal Use: Screening First
+                  Uso interno: evaluar primero
                 </div>
               </div>
             </div>
 
-            <PreAssessmentForm layout="full" locale="en" thankYouPath="/thank-you" />
+            <PreAssessmentForm
+              layout="full"
+              locale="es"
+              thankYouPath="/es/gracias"
+            />
           </div>
         </div>
       </section>

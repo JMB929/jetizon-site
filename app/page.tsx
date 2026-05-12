@@ -2,6 +2,7 @@
 
 import FaqBlock from "./components/faq-block";
 import Link from "next/link";
+import LanguageSwitcher from "./components/language-switcher";
 
 export default function Page() {
   const operatingModel = [
@@ -63,6 +64,7 @@ export default function Page() {
               EV & Energy Innovation
             </div>
             <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.24em] text-slate-400">
+              <LanguageSwitcher current="en" enHref="/" esHref="/es" />
               <a href="#vision" className="transition hover:text-lime-300">
                 Vision
               </a>

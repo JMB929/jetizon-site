@@ -1,4 +1,16 @@
-const faqs = [
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+type FaqBlockProps = {
+  title?: string;
+  heading?: string;
+  intro?: string;
+  items?: FaqItem[];
+};
+
+const defaultFaqs: FaqItem[] = [
   {
     question: "Do I need an architect or electrical contractor to start?",
     answer:
@@ -26,23 +38,23 @@ const faqs = [
   },
 ];
 
-export default function FaqBlock() {
+export default function FaqBlock({
+  title = "FAQ",
+  heading = "Common questions from host sites.",
+  intro = "These are the questions Jetizon hears most often from property owners, managers, and businesses exploring charging for the first time.",
+  items = defaultFaqs,
+}: FaqBlockProps) {
   return (
     <section id="faq" className="mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12">
       <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">FAQ</p>
-          <h2 className="mt-4 text-3xl font-semibold md:text-5xl">
-            Common questions from host sites.
-          </h2>
-          <p className="mt-6 text-lg leading-8 text-slate-300">
-            These are the questions Jetizon hears most often from property owners,
-            managers, and businesses exploring charging for the first time.
-          </p>
+          <p className="text-sm uppercase tracking-[0.3em] text-lime-400">{title}</p>
+          <h2 className="mt-4 text-3xl font-semibold md:text-5xl">{heading}</h2>
+          <p className="mt-6 text-lg leading-8 text-slate-300">{intro}</p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq) => (
+          {items.map((faq) => (
             <details
               key={faq.question}
               className="group rounded-[1.5rem] border border-white/10 bg-white/5 p-6 shadow-xl"
