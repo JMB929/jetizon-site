@@ -582,6 +582,22 @@ export default function OnsiteAssistant() {
     photoCount: number,
   ): PhotoAnalysisResult => {
     const visualScoreFallback = strongestScore(manualWithAerial, combinedScore);
+    const sanitizedReason = (() => {
+      if (
+        /expected pattern|unreadable json|no json object|openai analysis/i.test(
+          reason,
+        )
+      ) {
+        return "OpenAI analysis could not be completed, so this read uses the current site inputs only.";
+      }
+
+      if (reason.trim()) {
+        return reason.trim();
+      }
+
+      return "OpenAI analysis could not be completed, so this read uses the current site inputs only.";
+    })();
+
     const visiblePositives = [
       ...(photoCount > 0
         ? [`${photoCount} labeled site photo${photoCount === 1 ? "" : "s"} received for review.`]
@@ -615,14 +631,12 @@ export default function OnsiteAssistant() {
           : aerialScore === "Red"
             ? "High"
             : "Low",
-      agency_warning:
-        reason ||
-        "Site-based fallback read only; confirm the permit and utility path before treating this as final.",
+      agency_warning: sanitizedReason,
       next_step: nextSteps[0] || "Gather more site information before advancing.",
       confidence_note:
         photoCount > 0
-          ? `Fallback feedback shown because AI photo analysis could not be completed. ${reason}`
-          : `Fallback feedback shown because no photos were uploaded. ${reason}`,
+          ? "Fallback feedback shown because AI photo analysis could not be completed."
+          : "Fallback feedback shown because no photos were uploaded.",
     };
   };
 
