@@ -157,6 +157,7 @@ const PROJECT_TYPE_LABELS: Record<string, string> = {
   "secure-bike-parking": "Secure bike parking",
   "secure-escooter-parking": "Secure e-scooter parking",
   "simple-charging": "Simple charging access",
+  "ev-car-charging-port": "EV charging port / car charging station",
   "battery-cabinet": "Battery charging cabinet",
   "charging-rack": "Charging rack / enclosure",
 };
@@ -312,6 +313,7 @@ export default function OnsiteAssistant() {
 
   const isCabinetProject =
     projectType === "battery-cabinet" || projectType === "charging-rack";
+  const isChargingPortProject = projectType === "ev-car-charging-port";
   const isSimpleParking =
     projectType === "secure-bike-parking" ||
     projectType === "secure-escooter-parking";
@@ -319,6 +321,8 @@ export default function OnsiteAssistant() {
   let projectScore: TrafficLight = "Green";
   if (isCabinetProject) {
     projectScore = "Red";
+  } else if (isChargingPortProject) {
+    projectScore = "Yellow";
   } else if (!isSimpleParking) {
     projectScore = "Yellow";
   }
@@ -499,6 +503,8 @@ export default function OnsiteAssistant() {
 
   if (isCabinetProject) {
     bestFitUseCase = "FDNY-sensitive battery cabinet or rack deployment";
+  } else if (isChargingPortProject) {
+    bestFitUseCase = "EV charging port deployment with electrical review";
   }
 
   const agencies = {
@@ -506,6 +512,8 @@ export default function OnsiteAssistant() {
     fdny:
       isCabinetProject || complexity === "high"
         ? "Likely yes"
+        : isChargingPortProject
+          ? "Usually no"
         : projectType === "simple-charging"
           ? "Maybe"
           : "Usually no",
@@ -554,7 +562,6 @@ export default function OnsiteAssistant() {
     { key: "circulation", label: "Sidewalk, curb, or circulation" },
   ];
 
-  const selectedPhotoCount = Object.keys(selectedPhotos).length;
   const visualScore = analysis?.visual_score ?? null;
   const manualWithAerial = aerialScore ? strongestScore(overall, aerialScore) : overall;
   const combinedScore = visualScore ? strongestScore(manualWithAerial, visualScore) : manualWithAerial;
@@ -569,6 +576,55 @@ export default function OnsiteAssistant() {
   ]
     .filter(Boolean)
     .join(" / ");
+
+  const buildFallbackPhotoAnalysis = (
+    reason: string,
+    photoCount: number,
+  ): PhotoAnalysisResult => {
+    const visualScoreFallback = strongestScore(manualWithAerial, combinedScore);
+    const visiblePositives = [
+      ...(photoCount > 0
+        ? [`${photoCount} labeled site photo${photoCount === 1 ? "" : "s"} received for review.`]
+        : ["No photo upload was available, so this is a site-data fallback read."]),
+      ...(aerialPositives.length > 0 ? aerialPositives.slice(0, 2) : []),
+    ];
+
+    const visibleConcerns = [
+      ...(aerialConcerns.length > 0 ? aerialConcerns.slice(0, 2) : []),
+      ...(photoCount === 0
+        ? ["The photo analyzer could not inspect image content because no photos were uploaded."]
+        : ["OpenAI analysis was unavailable, so this read falls back to the current site inputs."]),
+    ];
+
+    return {
+      site_context: aerialSiteContext,
+      visual_score: visualScoreFallback,
+      visible_positives: visiblePositives,
+      visible_concerns: visibleConcerns,
+      suggested_use_case: isCabinetProject
+        ? "cabinet/rack candidate"
+        : isChargingPortProject
+          ? "EV charging port candidate"
+          : isSimpleParking
+            ? "secure bike parking"
+            : "simple charging access",
+      likely_complexity: isCabinetProject
+        ? "High"
+        : isChargingPortProject
+          ? "Moderate"
+          : aerialScore === "Red"
+            ? "High"
+            : "Low",
+      agency_warning:
+        reason ||
+        "Site-based fallback read only; confirm the permit and utility path before treating this as final.",
+      next_step: nextSteps[0] || "Gather more site information before advancing.",
+      confidence_note:
+        photoCount > 0
+          ? `Fallback feedback shown because AI photo analysis could not be completed. ${reason}`
+          : `Fallback feedback shown because no photos were uploaded. ${reason}`,
+    };
+  };
 
   const encodedAddress = encodeURIComponent(siteAddress.trim());
   const googleSatelliteUrl = encodedAddress
@@ -657,13 +713,25 @@ export default function OnsiteAssistant() {
   };
 
   const handleAnalyzePhotos = async () => {
+    const photoEntries = Object.values(selectedPhotos);
+
     try {
       setIsAnalyzing(true);
       setAnalysis(null);
       setAnalysisError("");
 
+      if (photoEntries.length === 0) {
+        setAnalysis(
+          buildFallbackPhotoAnalysis(
+            "Upload at least one labeled site photo for AI image analysis.",
+            0,
+          ),
+        );
+        return;
+      }
+
       const photos = await Promise.all(
-        Object.values(selectedPhotos).map(async (photo) => ({
+        photoEntries.map(async (photo) => ({
           label: photo.label,
           fileName: photo.file.name,
           dataUrl: await fileToDataUrl(photo.file),
@@ -705,7 +773,8 @@ export default function OnsiteAssistant() {
         error instanceof Error
           ? error.message
           : "AI photo analysis could not be completed.";
-      setAnalysisError(message);
+      setAnalysis(buildFallbackPhotoAnalysis(message, photoEntries.length));
+      setAnalysisError("");
     } finally {
       setIsAnalyzing(false);
     }
@@ -1199,6 +1268,7 @@ export default function OnsiteAssistant() {
               <option value="secure-bike-parking">Secure bike parking</option>
               <option value="secure-escooter-parking">Secure e-scooter parking</option>
               <option value="simple-charging">Simple charging access</option>
+              <option value="ev-car-charging-port">EV car charging port / EV charging port</option>
               <option value="battery-cabinet">Battery charging cabinet</option>
               <option value="charging-rack">Charging rack / enclosure</option>
             </select>
@@ -1860,14 +1930,14 @@ export default function OnsiteAssistant() {
                 </p>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
                   Upload labeled site photos to get an AI-assisted visible-condition
-                  screening layer. This helps flag layout, access, and public-space
-                  risks before deeper technical review.
+                  screening layer. If you do not have photos yet, Jetizon will still
+                  return a site-based fallback read from the current form inputs.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleAnalyzePhotos}
-                disabled={isAnalyzing || selectedPhotoCount === 0}
+                disabled={isAnalyzing}
                 className="rounded-2xl bg-lime-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isAnalyzing ? "Analyzing..." : "Analyze Site Photos"}
@@ -1900,9 +1970,9 @@ export default function OnsiteAssistant() {
             </div>
 
             <p className="mt-4 text-xs leading-6 text-slate-400">
-              This review is based only on visible conditions in submitted photos. It
-              does not confirm electrical capacity, permit approval, or final project
-              feasibility.
+              This review is based on submitted photos when available and falls back
+              to a site-data read when no photos are uploaded. It does not confirm
+              electrical capacity, permit approval, or final project feasibility.
             </p>
           </div>
         </div>

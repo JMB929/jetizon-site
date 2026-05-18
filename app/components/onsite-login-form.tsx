@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -86,6 +87,13 @@ export default function OnsiteLoginForm({ nextPath }: { nextPath: string }) {
         >
           {isSubmitting ? "Signing in..." : "Open onsite assistant"}
         </button>
+
+        <p className="text-center text-xs leading-6 text-slate-400">
+          Lost the login pair?{" "}
+          <Link href="/onsite-login/recover" className="text-lime-400 underline">
+            Rotate the onsite credentials
+          </Link>
+        </p>
       </form>
     </div>
   );

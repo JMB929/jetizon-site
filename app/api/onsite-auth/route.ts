@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const AUTH_COOKIE = "jetizon_onsite_auth";
-
-function encodedCredentials(username: string, password: string) {
-  return btoa(`${username}:${password}`);
-}
+import { encodedCredentials, loadActiveCredentials } from "@/lib/onsite-auth";
 
 export async function POST(request: NextRequest) {
-  const validUsername = process.env.ONSITE_ASSISTANT_USERNAME;
-  const validPassword = process.env.ONSITE_ASSISTANT_PASSWORD;
+  const credentials = await loadActiveCredentials();
 
-  if (!validUsername || !validPassword) {
+  if (!credentials) {
     return NextResponse.json(
       { error: "Onsite assistant credentials are not configured on the server." },
       { status: 503 },
@@ -26,16 +21,16 @@ export async function POST(request: NextRequest) {
   }
 
   if (
-    payload.username !== validUsername ||
-    payload.password !== validPassword
+    payload.username !== credentials.username ||
+    payload.password !== credentials.password
   ) {
     return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
   }
 
   const response = NextResponse.json({ ok: true });
   response.cookies.set({
-    name: AUTH_COOKIE,
-    value: encodedCredentials(validUsername, validPassword),
+    name: "jetizon_onsite_auth",
+    value: encodedCredentials(credentials.username, credentials.password),
     httpOnly: true,
     secure: true,
     sameSite: "lax",
@@ -48,7 +43,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
   response.cookies.set({
-    name: AUTH_COOKIE,
+    name: "jetizon_onsite_auth",
     value: "",
     httpOnly: true,
     secure: true,

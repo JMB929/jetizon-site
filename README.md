@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Private Onsite Access
+
+The internal onsite assistant lives at `/onsite-login` and `/onsite-assistant`.
+
+- Configure `ONSITE_ASSISTANT_USERNAME` and `ONSITE_ASSISTANT_PASSWORD` in the runtime environment.
+- Configure `ONSITE_ASSISTANT_RESET_CODE` if you want the recovery page at `/onsite-login/recover` to be able to rotate credentials.
+- The recovery flow persists the active onsite credentials to `.data/onsite-auth.json` when a reset is performed.
+- Keep `.data/` out of source control. The repository only ships `.env.example` for reference.

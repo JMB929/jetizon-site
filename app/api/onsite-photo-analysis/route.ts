@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         visible_positives: ["string"],
         visible_concerns: ["string"],
         suggested_use_case:
-          "secure bike parking | secure e-scooter parking | simple charging access | cabinet/rack candidate | too complex for early deployment",
+          "secure bike parking | secure e-scooter parking | simple charging access | EV car charging port candidate | cabinet/rack candidate | too complex for early deployment",
         likely_complexity: "Low | Moderate | High",
         agency_warning:
           "short note about likely visible DOB/FDNY/DOT risk based only on visible conditions",
